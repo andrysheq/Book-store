@@ -1,12 +1,17 @@
 package com.andrysheq.authservice.security.service;
 
+import com.andrysheq.authservice.domain.SignInRequest;
 import com.andrysheq.authservice.security.User;
+import com.andrysheq.authservice.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +22,15 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
     @org.springframework.beans.factory.annotation.Value("${token.signing.key}")
     //@Value("${token.signing.key}")
     private String jwtSigningKey;
+
+    private final AuthenticationManager authenticationManager;
+    private final UserService userDetailsService;
+    private final JwtUtil jwtUtil;
 
     /**
      * Извлечение имени пользователя из токена
@@ -114,7 +124,10 @@ public class JwtService {
      * @return данные
      */
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSigningKey()).build().parseClaimsJws(token)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
                 .getBody();
     }
 
@@ -126,5 +139,13 @@ public class JwtService {
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String createJwtToken(SignInRequest authenticationRequest) throws Exception {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        return jwtUtil.generateToken(userDetails);
     }
 }

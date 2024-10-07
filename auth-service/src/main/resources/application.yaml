@@ -1,8 +1,4 @@
 spring:
-  main:
-    web-application-type: reactive
-    allow-bean-definition-overriding: true
-
   application:
     name: auth-service
   datasource:
@@ -44,6 +40,4 @@ token:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.http: DEBUG
     root: DEBUG

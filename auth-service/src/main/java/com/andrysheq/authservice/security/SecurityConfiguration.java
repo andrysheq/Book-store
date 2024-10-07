@@ -1,9 +1,12 @@
 package com.andrysheq.authservice.security;
 
 import com.andrysheq.authservice.security.service.UserService;
+import com.andrysheq.authservice.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,54 +28,32 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final UserService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                // Своего рода отключение CORS (разрешение запросов со всех доменов)
-                .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
-                    corsConfiguration.setAllowCredentials(true);
-                    return corsConfiguration;
-                }))
-                // Настройка доступа к конечным точкам
-                .authorizeHttpRequests(request -> request
-                        // Можно указать конкретный путь, * - 1 уровень вложенности, ** - любое количество уровней вложенности
-                        .requestMatchers("/auth/**").permitAll()
-                        //.requestMatchers("book-author/authors").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
-                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(csrf -> csrf.disable())
+                .authorizeRequests()
+                .requestMatchers("/auth/**", "auth/login").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
+    }
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService.userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
     }
 }

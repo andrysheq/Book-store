@@ -68,7 +68,7 @@ public class AuthorController {
             path = AUTHORS_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<FindAuthorsResponse> getAllAuthors(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<FindAuthorsResponse> getAllAuthors(){//@RequestHeader("Authorization") String authorization) {
 
         return RestUtils.responseOf(authorService::findAllAuthors);
     }
@@ -106,7 +106,7 @@ public class AuthorController {
             path = AUTHORS_ID_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Author> getAuthor(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Author> getAuthor(
             @PathVariable(name = "id") Long authorId) {
 
         return RestUtils.responseOf(() -> authorService.getAuthor(authorId));
@@ -146,7 +146,7 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Author> addAuthor(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Author> addAuthor(
             @Parameter(name = "AuthorRecord", required = true) @Valid @RequestBody Request<AuthorRecord> request) {
 
         return RestUtils.responseOf(request, authorService::addAuthor);
@@ -181,7 +181,7 @@ public class AuthorController {
             path = AUTHORS_ID_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Void> deleteAuthor(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Void> deleteAuthor(
             @Parameter(description = "ID автора")
             @PathVariable Long id) {
 
@@ -224,7 +224,7 @@ public class AuthorController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Author> updateAuthor(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Author> updateAuthor(
             @PathVariable(name = "id") Long authorId,
             @Parameter(name = "AuthorRecord", required = true) @Valid @RequestBody Request<AuthorRecord> request) {
 

@@ -1,4 +1,8 @@
 spring:
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
   application:
     name: auth-service
   datasource:
@@ -15,6 +19,15 @@ spring:
         format_sql: true
   flyway:
     enabled: ${FLYWAY_ENABLED:true}
+  cloud:
+    gateway:
+      routes:
+        - id: book-author-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/book-author/**
+#      default-filters:
+#        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
 
 springdoc:
   swagger-ui:
@@ -22,8 +35,15 @@ springdoc:
     path: ${SWAGGER_PATH:/swagger-ui.html}
 
 server:
-  port: 8083
+  port: 8080
 
 token:
   signing:
     key: 289C9EDB672E70546B0DCD26077540A6C384E6544AF8118573B7EC9D25E42B1A
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.http: DEBUG
+    root: DEBUG

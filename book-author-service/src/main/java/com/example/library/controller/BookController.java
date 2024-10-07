@@ -69,7 +69,7 @@ public class BookController {
             path = BOOKS_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<FindBooksResponse> getAllBooks(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<FindBooksResponse> getAllBooks(){//@RequestHeader("Authorization") String authorization) {
 
         return RestUtils.responseOf(bookService::findAllBooks);
     }
@@ -107,7 +107,7 @@ public class BookController {
             path = BOOKS_ID_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Book> getBook(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Book> getBook(
             @PathVariable(name = "id") Long bookId) {
 
         return RestUtils.responseOf(() -> bookService.getBook(bookId));
@@ -147,7 +147,7 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Book> addBook(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Book> addBook(
             @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request) {
 
         return RestUtils.responseOf(request, bookService::addBook);
@@ -182,7 +182,7 @@ public class BookController {
             path = BOOKS_ID_URL,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Void> deleteBook(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Void> deleteBook(
             @Parameter(description = "ID книги")
             @PathVariable Long id) {
 
@@ -225,7 +225,7 @@ public class BookController {
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Book> updateBook(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<Book> updateBook(
             @PathVariable(name = "id") Long bookId,
             @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request) {
 

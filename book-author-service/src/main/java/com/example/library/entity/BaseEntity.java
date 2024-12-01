@@ -1,6 +1,9 @@
 package com.example.library.entity;
 
+import com.example.library.dto.enums.StatusType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,5 +23,17 @@ import java.time.Instant;
 @Getter
 @Setter
 public abstract class BaseEntity implements Serializable {
+    @Schema(description = "ID объекта")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Schema(description = "ID пользователя, подтверждающего добавление объекта")
+    @Nullable
+    private Long userId;
+
+    @Schema(description = "Статус объекта")
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private StatusType status = StatusType.NOT_CONFIRMED;
 }

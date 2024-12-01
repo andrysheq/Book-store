@@ -15,15 +15,15 @@ spring:
         format_sql: true
   flyway:
     enabled: ${FLYWAY_ENABLED:true}
-  cloud:
-    gateway:
-      routes:
-        - id: book-author-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/book-author/**
-#      default-filters:
-#        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: book-author-service
+#          uri: http://localhost:8081
+#          predicates:
+#            - Path=/book-author/**
+##      default-filters:
+##        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
 
 springdoc:
   swagger-ui:
@@ -39,5 +39,5 @@ token:
 
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG
-    root: DEBUG
+#    org.springframework.cloud.gateway: DEBUG
+    root: INFO

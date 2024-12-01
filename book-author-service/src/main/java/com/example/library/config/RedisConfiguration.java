@@ -27,7 +27,6 @@ import java.time.Duration;
 
 @Configuration
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-@EnableCaching
 @RequiredArgsConstructor
 public class RedisConfiguration {
 

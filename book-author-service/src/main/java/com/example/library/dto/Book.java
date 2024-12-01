@@ -1,6 +1,7 @@
 package com.example.library.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -29,4 +30,8 @@ public class Book extends BaseDomain {
     @Schema(description = "ID авторов, работавших над книгой")
     @NotNull
     private Set<Long> authorIds;
+
+    @Schema(description = "ID пользователя, подтверждающего добавление объекта")
+    @Nullable
+    private Long userId;
 }

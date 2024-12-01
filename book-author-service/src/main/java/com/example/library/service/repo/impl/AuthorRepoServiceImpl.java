@@ -35,7 +35,6 @@ public class AuthorRepoServiceImpl implements AuthorRepoService {
 
     @Override
     @Transactional
-    @CachePut(value = "authorById", key = "#result.id")
     public AuthorEntity saveAuthor(AuthorRecord author) {
         AuthorEntity authorEntity = mapper.map(author, AuthorEntity.class);
         return authorRepository.save(authorEntity);

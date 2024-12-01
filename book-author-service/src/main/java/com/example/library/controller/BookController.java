@@ -148,9 +148,10 @@ public class BookController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Book> addBook(
-            @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request) {
+            @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request,
+            @RequestParam("userId") Long userId) {
 
-        return RestUtils.responseOf(request, bookService::addBook);
+        return RestUtils.responseOf(request, req -> bookService.addBook(request,userId));
     }
 
     @Operation(

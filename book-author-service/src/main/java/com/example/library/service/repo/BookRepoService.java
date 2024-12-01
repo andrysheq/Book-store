@@ -1,6 +1,5 @@
 package com.example.library.service.repo;
 
-import com.example.library.dto.Book;
 import com.example.library.dto.request.BookRecord;
 import com.example.library.entity.BookEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,7 @@ public interface BookRepoService {
 
     BookEntity findById(Long id);
 
-    BookEntity saveBook(BookRecord book);
+    BookEntity saveBook(BookRecord book, Long userId);
 
     BookEntity updateBook(BookEntity bookEntity);
 

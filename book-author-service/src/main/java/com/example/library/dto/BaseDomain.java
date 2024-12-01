@@ -1,6 +1,9 @@
 package com.example.library.dto;
 
+import com.example.library.dto.enums.StatusType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +24,11 @@ public abstract class BaseDomain implements Serializable {
     @NotNull
     @Schema(name = "id", description = "Идентификатор записи", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
+
+    @Schema(description = "Статус объекта")
+    @Nullable
+    @Enumerated()
+    private StatusType status;
 
     public BaseDomain() {
     }

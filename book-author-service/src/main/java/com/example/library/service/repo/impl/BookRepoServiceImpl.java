@@ -1,6 +1,5 @@
 package com.example.library.service.repo.impl;
 
-import com.example.library.dto.Book;
 import com.example.library.dto.request.BookRecord;
 import com.example.library.entity.BookEntity;
 import com.example.library.exception.RecordNotFoundException;
@@ -16,10 +15,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -41,10 +38,9 @@ public class BookRepoServiceImpl implements BookRepoService {
 
     @Override
     @Transactional
-    @CachePut(value = "bookById", key = "#result.id")
-    public BookEntity saveBook(BookRecord book) {
+    public BookEntity saveBook(BookRecord book, Long userId) {
         BookEntity bookEntity = mapper.map(book, BookEntity.class);
-
+        bookEntity.setUserId(userId);
         return bookRepository.save(bookEntity);
     }
 

@@ -40,4 +40,8 @@ public class Author extends BaseDomain {
     @JsonFormat(pattern = "dd.MM.yyyy", shape = JsonFormat.Shape.STRING)
     @Schema(name = "birthDate", description = "Дата рождения автора", requiredMode = Schema.RequiredMode.REQUIRED, pattern = "dd.MM.yyyy", example = "18.08.2023")
     private LocalDate birthDate;
+
+    @Schema(description = "ID пользователя, подтверждающего добавление объекта")
+    @Nullable
+    private Long userId;
 }

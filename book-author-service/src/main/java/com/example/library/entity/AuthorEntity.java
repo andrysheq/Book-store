@@ -15,13 +15,8 @@ import java.time.LocalDate;
 @Table(name = "author")
 @Getter
 @Setter
-@EqualsAndHashCode(of = "id", callSuper = false)
 @RequiredArgsConstructor
 public class AuthorEntity extends BaseEntity {
-    @Schema(description = "ID автора")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Schema(description = "Имя автора")
     @NotNull

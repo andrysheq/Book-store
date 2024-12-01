@@ -58,7 +58,7 @@ public class UserService {
     public void incrementRegisteredObjects(Long userId) {
         User user = getById(userId);
         Integer registeredObjects = user.getRegisteredObjects();
-        user.setRegisteredObjects(registeredObjects++);
+        user.setRegisteredObjects(++registeredObjects);
         repository.save(user);
     }
 

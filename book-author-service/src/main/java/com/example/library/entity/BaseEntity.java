@@ -27,13 +27,4 @@ public abstract class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Schema(description = "ID пользователя, подтверждающего добавление объекта")
-    @Nullable
-    private Long userId;
-
-    @Schema(description = "Статус объекта")
-    @Nullable
-    @Enumerated(EnumType.STRING)
-    private StatusType status = StatusType.NOT_CONFIRMED;
 }

@@ -1,7 +1,9 @@
 package com.example.library.dto;
 
+import com.example.library.dto.enums.StatusType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -34,4 +36,9 @@ public class Book extends BaseDomain {
     @Schema(description = "ID пользователя, подтверждающего добавление объекта")
     @Nullable
     private Long userId;
+
+    @Schema(description = "Статус объекта")
+    @Nullable
+    @Enumerated()
+    private StatusType status;
 }

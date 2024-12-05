@@ -25,11 +25,6 @@ public abstract class BaseDomain implements Serializable {
     @Schema(name = "id", description = "Идентификатор записи", requiredMode = Schema.RequiredMode.REQUIRED)
     private Long id;
 
-    @Schema(description = "Статус объекта")
-    @Nullable
-    @Enumerated()
-    private StatusType status;
-
     public BaseDomain() {
     }
 }

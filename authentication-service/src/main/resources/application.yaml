@@ -1,0 +1,37 @@
+spring:
+
+  application:
+    name: AuthService
+  datasource:
+    url: jdbc:postgresql://auth_db:9981/accounts
+    username: root
+    password: example
+  security:
+    user:
+      password: example
+      name: root
+  jpa:
+    show-sql: true
+  main:
+    allow-circular-references: true
+server:
+  port: 9980
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
+
+app:
+  config:
+    keycloak:
+      server-url: http://keycloak:9982
+      realm: auth_service_realm
+      client-id: account_service
+      client-secret: vEFsZkyPGLKJbzBTrXyAPy8F1VLnFrbv
+      tokenUrl: http://keycloak:9982/realms/auth_service_realm/protocol/openid-connect/token
+      grant_type_login: password
+      grant_type_refresh: refresh_token
+      scope: openid

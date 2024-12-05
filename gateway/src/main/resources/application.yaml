@@ -1,0 +1,62 @@
+app:
+  config:
+    keycloak:
+      url: http://localhost:9982/
+      realm: auth_service_realm
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/token
+            authorization-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/auth
+            user-name-attribute: preferred_username
+            user-info-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/userinfo
+            jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs
+            user-info-authentication-method: header
+        registration:
+          banking-service-client:
+            provider: keycloak
+            client-id: flat_gateway
+            client-secret: LcC4ymMTfAEkfFkI7AbGfabqP7pOCj4a
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:9982/login/oauth2/code/keycloak
+            scope: openid
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${app.config.keycloak.url}/realms/${app.config.keycloak.realm}/protocol/openid-connect/certs
+
+  application:
+    name: FlatGateway
+  cloud:
+    gateway:
+      routes:
+        - id: Auth
+          uri:
+            http://localhost:9980/
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /$\{segment}
+        - id: Flat
+          uri:
+            http://localhost:9999/
+          predicates:
+            - Path=/flats/**
+          filters:
+            - RewritePath=/flats/(?<segment>.*), /$\{segment}
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 9970
+
+logging:
+  level:
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: INFO

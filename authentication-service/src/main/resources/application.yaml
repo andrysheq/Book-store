@@ -1,9 +1,12 @@
 spring:
-
+  docker:
+    compose:
+      enabled: false
   application:
     name: AuthService
   datasource:
-    url: jdbc:postgresql://auth_db:9981/accounts
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://172.20.0.2:5432/accounts
     username: root
     password: example
   security:
@@ -19,7 +22,6 @@ spring:
     clean-disabled: false
 server:
   port: 9980
-
 logging:
   level:
     root: INFO

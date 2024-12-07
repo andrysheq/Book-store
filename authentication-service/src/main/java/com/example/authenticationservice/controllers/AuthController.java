@@ -1,8 +1,9 @@
-package org.example.controllers;
+package com.example.authenticationservice.controllers;
 
-import org.example.dto.AccountDto;
-import org.example.dto.JwtDto;
-import org.example.services.authorize.IAuthorizeService;
+
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.dto.JwtDto;
+import com.example.authenticationservice.services.authorize.IAuthorizeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

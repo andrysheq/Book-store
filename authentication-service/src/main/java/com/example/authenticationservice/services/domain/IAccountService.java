@@ -1,6 +1,7 @@
-package org.example.services.domain;
+package com.example.authenticationservice.services.domain;
 
-import org.example.dto.AccountDto;
+
+import com.example.authenticationservice.dto.AccountDto;
 import org.springframework.stereotype.Service;
 
 @Service

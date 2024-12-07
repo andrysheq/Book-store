@@ -1,4 +1,4 @@
-package org.example.config.keycloak;
+package com.example.authenticationservice.config.keycloak;
 
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.resource.RealmResource;

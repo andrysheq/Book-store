@@ -1,15 +1,13 @@
-package org.example.services.authorize.impls;
+package com.example.authenticationservice.services.authorize.impls;
 
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.dto.JwtDto;
+import com.example.authenticationservice.exceptions.AlreadyExistsException;
+import com.example.authenticationservice.mappers.UserRepresentationMapper;
+import com.example.authenticationservice.services.authorize.IAuthorizeService;
+import com.example.authenticationservice.services.domain.IAccountService;
+import com.example.authenticationservice.services.keycloak.IKeyCloakService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.example.dto.AccountDto;
-import org.example.dto.JwtDto;
-import org.example.exceptions.AlreadyExistsException;
-import org.example.mappers.UserRepresentationMapper;
-import org.example.services.authorize.IAuthorizeService;
-import org.example.services.domain.IAccountService;
-import org.example.services.keycloak.IKeyCloakService;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

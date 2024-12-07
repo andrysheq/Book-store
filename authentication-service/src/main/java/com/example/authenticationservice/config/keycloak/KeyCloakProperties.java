@@ -1,4 +1,4 @@
-package org.example.config.keycloak;
+package com.example.authenticationservice.config.keycloak;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

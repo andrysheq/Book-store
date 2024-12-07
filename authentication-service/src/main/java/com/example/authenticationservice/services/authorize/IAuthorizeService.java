@@ -1,7 +1,8 @@
-package org.example.services.authorize;
+package com.example.authenticationservice.services.authorize;
 
-import org.example.dto.AccountDto;
-import org.example.dto.JwtDto;
+
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.dto.JwtDto;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 

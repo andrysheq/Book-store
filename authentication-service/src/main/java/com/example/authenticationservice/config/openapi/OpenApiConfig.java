@@ -1,4 +1,4 @@
-package org.example.config.openapi;
+package com.example.authenticationservice.config.openapi;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;

@@ -1,9 +1,9 @@
-package org.example.mappers.impl;
+package com.example.authenticationservice.mappers.impl;
 
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.entites.Account;
+import com.example.authenticationservice.mappers.UserRepresentationMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.example.dto.AccountDto;
-import org.example.entites.Account;
-import org.example.mappers.UserRepresentationMapper;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;

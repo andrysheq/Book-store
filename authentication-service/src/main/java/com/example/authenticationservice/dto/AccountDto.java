@@ -1,4 +1,4 @@
-package org.example.dto;
+package com.example.authenticationservice.dto;
 
 import jakarta.persistence.Column;
 import lombok.*;

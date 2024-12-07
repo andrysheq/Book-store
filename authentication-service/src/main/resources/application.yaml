@@ -14,6 +14,9 @@ spring:
     show-sql: true
   main:
     allow-circular-references: true
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    clean-disabled: false
 server:
   port: 9980
 

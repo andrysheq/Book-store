@@ -1,6 +1,6 @@
-package org.example.repos;
+package com.example.authenticationservice.repos;
 
-import org.example.entites.Account;
+import com.example.authenticationservice.entites.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;

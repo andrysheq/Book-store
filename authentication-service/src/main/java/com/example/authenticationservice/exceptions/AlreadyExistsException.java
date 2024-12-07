@@ -1,4 +1,4 @@
-package org.example.exceptions;
+package com.example.authenticationservice.exceptions;
 
 public class AlreadyExistsException extends RuntimeException{
     public AlreadyExistsException(String message) {

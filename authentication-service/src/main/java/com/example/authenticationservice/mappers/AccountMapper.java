@@ -1,7 +1,7 @@
-package org.example.mappers;
+package com.example.authenticationservice.mappers;
 
-import org.example.dto.AccountDto;
-import org.example.entites.Account;
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.entites.Account;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "SPRING")

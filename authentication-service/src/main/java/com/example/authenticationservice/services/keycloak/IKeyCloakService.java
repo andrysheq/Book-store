@@ -1,4 +1,4 @@
-package org.example.services.keycloak;
+package com.example.authenticationservice.services.keycloak;
 
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;

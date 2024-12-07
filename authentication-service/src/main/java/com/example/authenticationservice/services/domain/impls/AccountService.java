@@ -1,12 +1,12 @@
-package org.example.services.domain.impls;
+package com.example.authenticationservice.services.domain.impls;
 
-import org.example.dto.AccountDto;
-import org.example.entites.Account;
-import org.example.exceptions.AlreadyExistsException;
-import org.example.exceptions.NotFoundException;
-import org.example.mappers.AccountMapper;
-import org.example.repos.AccountRepository;
-import org.example.services.domain.IAccountService;
+import com.example.authenticationservice.dto.AccountDto;
+import com.example.authenticationservice.entites.Account;
+import com.example.authenticationservice.exceptions.AlreadyExistsException;
+import com.example.authenticationservice.exceptions.NotFoundException;
+import com.example.authenticationservice.mappers.AccountMapper;
+import com.example.authenticationservice.repos.AccountRepository;
+import com.example.authenticationservice.services.domain.IAccountService;
 import org.springframework.stereotype.Service;
 @Service
 public class AccountService implements IAccountService {

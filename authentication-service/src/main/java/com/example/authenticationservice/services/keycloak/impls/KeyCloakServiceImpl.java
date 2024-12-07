@@ -1,7 +1,7 @@
-package org.example.services.keycloak.impls;
+package com.example.authenticationservice.services.keycloak.impls;
 
-import org.example.config.keycloak.KeyCloakManager;
-import org.example.services.keycloak.IKeyCloakService;
+import com.example.authenticationservice.config.keycloak.KeyCloakManager;
+import com.example.authenticationservice.services.keycloak.IKeyCloakService;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;

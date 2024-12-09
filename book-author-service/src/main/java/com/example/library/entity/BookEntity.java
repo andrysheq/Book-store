@@ -16,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class BookEntity extends BaseEntity {
 
     @Schema(description = "Название книги")

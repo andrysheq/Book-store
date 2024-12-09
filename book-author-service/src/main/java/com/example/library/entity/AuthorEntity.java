@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthorEntity extends BaseEntity {
 
     @Schema(description = "Имя автора")

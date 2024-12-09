@@ -61,6 +61,7 @@ logging:
     org.springframework.web: INFO
     ROOT: INFO
     org.zalando.logbook: TRACE
+    org.hibernate.SQL: DEBUG
 
 springdoc:
   swagger-ui:

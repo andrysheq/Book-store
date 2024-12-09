@@ -23,10 +23,11 @@
 	</developers>
 	<modules>
 		<module>book-author-service</module>
+		<module>auth-service</module>
 <!--		<module>auth-service</module>-->
-		<module>authentication-service</module>
+<!--		<module>authentication-service</module>-->
 <!--		<module>account-service</module>-->
-		<module>gateway</module>
+<!--		<module>gateway</module>-->
 	</modules>
 	<scm>
 		<connection/>

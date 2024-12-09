@@ -48,7 +48,7 @@ public class BookRepoServiceImpl implements BookRepoService {
     @Transactional
     @CachePut(value = "bookById", key = "#bookEntity.id")
     public BookEntity updateBook(BookEntity bookEntity) {
-        return bookRepository.saveAndFlush(bookEntity);
+        return bookRepository.save(bookEntity);
     }
 
     @Override

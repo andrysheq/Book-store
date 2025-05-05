@@ -63,6 +63,7 @@ public class AuthorRepoServiceImpl implements AuthorRepoService {
     @Transactional
     @CacheEvict(value = "authorById", key = "#id")
     public void deleteById(Long id) {
+        authorRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Автор не найден. id: " + id));
         authorRepository.deleteById(id);
     }
 }

@@ -5,7 +5,7 @@ import com.example.library.dto.error.ErrorResponse;
 import com.example.library.dto.request.AuthorRecord;
 import com.example.library.dto.request.Request;
 import com.example.library.dto.response.FindAuthorsResponse;
-import com.example.library.service.AuthorService;
+import com.example.library.service.AuthorHandler;
 import com.example.library.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthorController {
     private static final String AUTHORS_URL = "/authors";
     private static final String AUTHORS_ID_URL = "/authors/{id}";
-    private final AuthorService authorService;
+    private final AuthorHandler authorHandler;
 
     @Operation(
             summary = "Получить список авторов"
@@ -70,7 +70,7 @@ public class AuthorController {
     )
     public ResponseEntity<FindAuthorsResponse> getAllAuthors(){//@RequestHeader("Authorization") String authorization) {
 
-        return RestUtils.responseOf(authorService::findAllAuthors);
+        return RestUtils.responseOf(authorHandler::findAllAuthors);
     }
 
     @Operation(
@@ -109,7 +109,7 @@ public class AuthorController {
     public ResponseEntity<Author> getAuthor(
             @PathVariable(name = "id") Long authorId) {
 
-        return RestUtils.responseOf(() -> authorService.getAuthor(authorId));
+        return RestUtils.responseOf(() -> authorHandler.getAuthor(authorId));
     }
 
     @Operation(
@@ -149,7 +149,7 @@ public class AuthorController {
     public ResponseEntity<Author> addAuthor(
             @Parameter(name = "AuthorRecord", required = true) @Valid @RequestBody Request<AuthorRecord> request) {
 
-        return RestUtils.responseOf(request, authorService::addAuthor);
+        return RestUtils.responseOf(request, authorHandler::addAuthor);
     }
 
     @Operation(
@@ -185,7 +185,7 @@ public class AuthorController {
             @Parameter(description = "ID автора")
             @PathVariable Long id) {
 
-        authorService.deleteAuthor(id);
+        authorHandler.deleteAuthor(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -228,6 +228,6 @@ public class AuthorController {
             @PathVariable(name = "id") Long authorId,
             @Parameter(name = "AuthorRecord", required = true) @Valid @RequestBody Request<AuthorRecord> request) {
 
-        return RestUtils.responseOf(request, req -> authorService.updateAuthor(authorId, req));
+        return RestUtils.responseOf(request, req -> authorHandler.updateAuthor(authorId, req));
     }
 }

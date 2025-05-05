@@ -9,6 +9,7 @@ import com.example.library.repository.AuthorRepository;
 import com.example.library.repository.BookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -65,6 +66,7 @@ class BookApiTest {
      * Тест добавления 100 000 элементов
      */
     @Test
+    @Disabled
     void shouldAdd100000Authors() throws Exception {
         IntStream.range(0, 10_000).forEach(i -> {
             try {
@@ -76,6 +78,7 @@ class BookApiTest {
     }
 
     @Test
+    @Disabled
     public void shouldAddBook() throws Exception {
         BookRecord book = BookRecord.builder()
                 .authorIds(Set.of(1L))

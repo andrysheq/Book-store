@@ -4,9 +4,8 @@ import com.example.library.dto.Book;
 import com.example.library.dto.error.ErrorResponse;
 import com.example.library.dto.request.BookRecord;
 import com.example.library.dto.request.Request;
-import com.example.library.dto.response.BookResponse;
 import com.example.library.dto.response.FindBooksResponse;
-import com.example.library.service.BookService;
+import com.example.library.service.BookHandler;
 import com.example.library.utils.RestUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
     private static final String BOOKS_URL = "/books";
     private static final String BOOKS_ID_URL = "/books/{id}";
-    private final BookService bookService;
+    private final BookHandler bookHandler;
 
     @Operation(
             summary = "Получить список книг"
@@ -71,7 +70,7 @@ public class BookController {
     )
     public ResponseEntity<FindBooksResponse> getAllBooks(){//@RequestHeader("Authorization") String authorization) {
 
-        return RestUtils.responseOf(bookService::findAllBooks);
+        return RestUtils.responseOf(bookHandler::findAllBooks);
     }
 
     @Operation(
@@ -110,7 +109,7 @@ public class BookController {
     public ResponseEntity<Book> getBook(
             @PathVariable(name = "id") Long bookId) {
 
-        return RestUtils.responseOf(() -> bookService.getBook(bookId));
+        return RestUtils.responseOf(() -> bookHandler.getBook(bookId));
     }
 
     @Operation(
@@ -148,10 +147,9 @@ public class BookController {
             consumes = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Book> addBook(
-            @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request,
-            @RequestParam("userId") Long userId) {
+            @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request) {
 
-        return RestUtils.responseOf(request, req -> bookService.addBook(request,userId));
+        return RestUtils.responseOf(request, req -> bookHandler.addBook(request));
     }
 
     @Operation(
@@ -187,7 +185,7 @@ public class BookController {
             @Parameter(description = "ID книги")
             @PathVariable Long id) {
 
-        bookService.deleteBook(id);
+        bookHandler.deleteBook(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -230,6 +228,6 @@ public class BookController {
             @PathVariable(name = "id") Long bookId,
             @Parameter(name = "Book", required = true) @Valid @RequestBody Request<BookRecord> request) {
 
-        return RestUtils.responseOf(request, req -> bookService.updateBook(bookId, req));
+        return RestUtils.responseOf(request, req -> bookHandler.updateBook(bookId, req));
     }
 }

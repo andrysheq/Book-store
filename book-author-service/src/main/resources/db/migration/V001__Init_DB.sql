@@ -14,9 +14,7 @@ CREATE TABLE book (
         CONSTRAINT book_pkey
             PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    page_amount bigint NOT NULL,
-    user_id bigserial,
-    status VARCHAR(255) NOT NULL
+    page_amount bigint NOT NULL
 );
 
 CREATE TABLE book_author (

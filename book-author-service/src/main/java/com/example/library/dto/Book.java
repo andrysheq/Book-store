@@ -32,13 +32,4 @@ public class Book extends BaseDomain {
     @Schema(description = "ID авторов, работавших над книгой")
     @NotNull
     private Set<Long> authorIds;
-
-    @Schema(description = "ID пользователя, подтверждающего добавление объекта")
-    @Nullable
-    private Long userId;
-
-    @Schema(description = "Статус объекта")
-    @Nullable
-    @Enumerated()
-    private StatusType status;
 }

@@ -11,7 +11,7 @@ public interface BookRepoService {
 
     BookEntity findById(Long id);
 
-    BookEntity saveBook(BookRecord book, Long userId);
+    BookEntity saveBook(BookRecord book);
 
     BookEntity updateBook(BookEntity bookEntity);
 

@@ -3,19 +3,13 @@ package com.example.library.config;
 import com.example.library.dto.Author;
 import com.example.library.dto.Book;
 import com.example.library.dto.response.BookResponse;
-import com.example.library.entity.AuthorEntity;
 import com.example.library.entity.BookEntity;
 import com.example.library.mapper.BaseMapper;
 import com.example.library.repository.AuthorRepository;
-import com.example.library.service.AuthorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import static org.modelmapper.config.Configuration.AccessLevel.PUBLIC;
 

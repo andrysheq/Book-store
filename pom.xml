@@ -23,7 +23,6 @@
 	</developers>
 	<modules>
 		<module>book-author-service</module>
-		<module>auth-service</module>
 	</modules>
 	<scm>
 		<connection/>

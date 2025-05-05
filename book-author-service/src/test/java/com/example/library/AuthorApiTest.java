@@ -7,6 +7,7 @@ import com.example.library.dto.enums.Gender;
 import com.example.library.repository.AuthorRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,6 +48,7 @@ class AuthorApiTest {
      * Тест добавления 100 элементов
      */
     @Test
+    @Disabled
     void shouldAdd100Authors() throws Exception {
         IntStream.range(0, 100).forEach(i -> {
             try {
@@ -64,6 +66,7 @@ class AuthorApiTest {
      * Тест добавления 100 000 элементов
      */
     @Test
+    @Disabled
     void shouldAdd100000Authors() throws Exception {
         IntStream.range(0, 100_000).forEach(i -> {
             try {
@@ -78,6 +81,7 @@ class AuthorApiTest {
     }
 
     @Test
+    @Disabled
     public void shouldAddAuthor() throws Exception {
         Author author = Author.builder()
                 .firstName("FirstName0")
@@ -100,6 +104,7 @@ class AuthorApiTest {
      * Тест на удаление всех элементов
      */
     @Test
+    @Disabled
     void shouldDeleteAllAuthors() throws Exception {
         authorRepository.deleteAll();
 

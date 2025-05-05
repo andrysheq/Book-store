@@ -9,9 +9,6 @@ import com.example.library.entity.AuthorEntity;
 import com.example.library.service.repo.AuthorRepoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class AuthorService {
+public class AuthorHandler {
     private final BaseMapper mapper;
     private final AuthorRepoService authorRepoService;
 

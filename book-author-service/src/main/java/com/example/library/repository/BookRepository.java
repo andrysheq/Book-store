@@ -35,14 +35,15 @@ public interface BookRepository extends BaseRepository<BookEntity> {
     @Query("select b from BookEntity b where b.id = ?1")
     Optional<BookEntity> findById(Long id);
 
-    @Transactional
-    @Modifying
-    @Query(value = "insert into book_author (book_id, author_id) values (:bookId, :authorId)", nativeQuery = true)
-    void saveBookAuthor(@Param("bookId") Long bookId, @Param("authorId") Long authorId);
-
-    @Transactional
+    @Modifying               // ← обязательно
+    @Transactional           // можно и здесь, но лучше на уровне сервиса
     @Query(value = "DELETE FROM book_author WHERE book_id = :bookId", nativeQuery = true)
     void deleteBookAuthorsByBookId(@Param("bookId") Long bookId);
+
+    @Modifying               // для вставки в join-таблицу
+    @Transactional
+    @Query(value = "INSERT INTO book_author (book_id, author_id) VALUES (:bookId, :authorId)", nativeQuery = true)
+    void saveBookAuthor(@Param("bookId") Long bookId, @Param("authorId") Long authorId);
 
 
 }

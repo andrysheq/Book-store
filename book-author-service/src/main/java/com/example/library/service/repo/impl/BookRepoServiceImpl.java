@@ -4,7 +4,7 @@ import com.example.library.dto.request.BookRecord;
 import com.example.library.entity.BookEntity;
 import com.example.library.exception.RecordNotFoundException;
 import com.example.library.repository.BookRepository;
-import com.example.library.service.AuthorService;
+import com.example.library.service.AuthorHandler;
 import com.example.library.service.repo.BookRepoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,6 @@ public class BookRepoServiceImpl implements BookRepoService {
 
     private final BookRepository bookRepository;
     private final ModelMapper mapper;
-    private final AuthorService authorService;
 
     @Override
     @Transactional(readOnly = true)
@@ -38,9 +37,8 @@ public class BookRepoServiceImpl implements BookRepoService {
 
     @Override
     @Transactional
-    public BookEntity saveBook(BookRecord book, Long userId) {
+    public BookEntity saveBook(BookRecord book) {
         BookEntity bookEntity = mapper.map(book, BookEntity.class);
-        bookEntity.setUserId(userId);
         return bookRepository.save(bookEntity);
     }
 
@@ -61,6 +59,7 @@ public class BookRepoServiceImpl implements BookRepoService {
     @Transactional
     @CacheEvict(value = "bookById", key = "#id")
     public void deleteById(Long id) {
+        bookRepository.findById(id).orElseThrow(() -> new RecordNotFoundException("Книга не найдена. id: " + id));
         bookRepository.deleteById(id);
     }
 }

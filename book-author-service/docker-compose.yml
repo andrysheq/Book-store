@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8088:8081"
+      - "8088:8088"
     depends_on:
       - postgres
     environment:
@@ -14,7 +14,14 @@ services:
       DB_PORT: 5432
       DB_DATABASE: books
       DB_USERNAME: postgres
+      SERVER_PORT: 8088
       DB_PASSWORD: postgres
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus,metrics
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
+      SPRING_CACHE_TYPE: none
+      MANAGEMENT_HEALTH_REDIS_ENABLED: false
+    networks:
+      - monitoring
 
   postgres:
     image: postgres:17
@@ -24,4 +31,44 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: books
     ports:
-      - "54322:5432"
+      - "5432:5432"
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d books" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  grafana:
+    build: './grafana'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    networks:
+      - monitoring
+    command:  # Добавьте для авто-релоада конфига при изменениях (опционально)
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'  # Позволит /-/reload без рестарта
+    restart: unless-stopped  # Best practice для мониторинга
+
+networks:
+  monitoring:

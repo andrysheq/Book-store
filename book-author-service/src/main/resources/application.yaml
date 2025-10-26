@@ -1,15 +1,15 @@
 server:
-  port: 8081
+  port: ${SERVER_PORT:8088}
 spring:
   application:
     name: library
 
-#  cache:
-#    type: redis
+  cache:
+    type: ${SPRING_CACHE_TYPE:none}
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:54322}/${DB_DATABASE:books}"
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_DATABASE:books}"
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
@@ -26,6 +26,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show_sql: ${SHOW_SQL:true}   #  false in prod
         format_sql: ${FORMAT_SQL:true}
+        generate_statistics: true
       jakarta:
         persistence:
           sharedCache:
@@ -53,6 +54,26 @@ spring:
 #    topic:
 #      request-topic: object-add-request
 #      response-topic: object-add-response
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics,info
+
+  health:
+    redis:
+      enabled: ${MANAGEMENT_HEALTH_REDIS_ENABLED:false}
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:

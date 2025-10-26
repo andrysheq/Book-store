@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8089}
+spring:
+  application:
+    name: users-service
+
+  cache:
+    type: ${SPRING_CACHE_TYPE:none}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics,info
+
+  health:
+    redis:
+      enabled: ${MANAGEMENT_HEALTH_REDIS_ENABLED:false}
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.cache: TRACE
+    org.springframework.web: INFO
+    ROOT: INFO
+    org.zalando.logbook: TRACE
+

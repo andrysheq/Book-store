@@ -1,27 +1,45 @@
 version: '3.8'
 
 services:
-  app:
+  book-author-service:
     build:
-      context: .
+      context: ./book-author-service
       dockerfile: Dockerfile
     ports:
       - "8088:8088"
     depends_on:
       - postgres
     environment:
+      SERVER_PORT: 8088
       DB_HOST: postgres
       DB_PORT: 5432
       DB_DATABASE: books
       DB_USERNAME: postgres
-      SERVER_PORT: 8088
       DB_PASSWORD: postgres
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus,metrics
       MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
-      SPRING_CACHE_TYPE: none
-      MANAGEMENT_HEALTH_REDIS_ENABLED: false
     networks:
       - monitoring
+
+  users-service:
+    build:
+      context: ./users-service
+      dockerfile: Dockerfile
+    ports:
+      - "8089:8089"
+    environment:
+      SERVER_PORT: 8089
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus,metrics
+      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8089/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   postgres:
     image: postgres:17
@@ -42,24 +60,26 @@ services:
       start_period: 30s
 
   grafana:
-    build: '../monitoring/grafana'  # ← изменили путь
+    build: ./monitoring/grafana
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
-      - ../monitoring/grafana:/var/lib/grafana  # ← изменили путь
+      - ./monitoring/grafana:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
       - monitoring
+    depends_on:
+      - prometheus
 
   prometheus:
     image: prom/prometheus
     ports:
-      - 9090:9090
+      - "9090:9090"
     volumes:
-      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml  # ← изменили путь
-      - ../monitoring/prometheus:/prometheus  # ← изменили путь
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus:/prometheus
     networks:
       - monitoring
     command:
@@ -72,3 +92,4 @@ services:
 
 networks:
   monitoring:
+    driver: bridge

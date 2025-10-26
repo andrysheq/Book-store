@@ -3,15 +3,15 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-!**/prometheus/wal/
-!**/prometheus/chunks_head/
-!**/prometheus/lock
-!**/prometheus/queries.active
-!**/grafana/csv/
-!**/grafana/pdf/
-!**/grafana/plugins/
-!**/grafana/png/
-!**/grafana/grafana.db
+/monitoring/prometheus/wal/
+/monitoring/prometheus/chunks_head/
+/monitoring/prometheus/lock
+/monitoring/prometheus/queries.active
+/monitoring/grafana/csv/
+/monitoring/grafana/pdf/
+/monitoring/grafana/plugins/
+/monitoring/grafana/png/
+/monitoring/grafana/grafana.db
 
 ### STS ###
 .apt_generated

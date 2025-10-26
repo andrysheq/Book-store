@@ -3,14 +3,14 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-!**/prometheus/wal
-!**/prometheus/chunks_head
+!**/prometheus/wal/
+!**/prometheus/chunks_head/
 !**/prometheus/lock
 !**/prometheus/queries.active
-!**/grafana/csv
-!**/grafana/pdf
-!**/grafana/plugins
-!**/grafana/png
+!**/grafana/csv/
+!**/grafana/pdf/
+!**/grafana/plugins/
+!**/grafana/png/
 !**/grafana/grafana.db
 
 ### STS ###

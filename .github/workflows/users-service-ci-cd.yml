@@ -109,4 +109,4 @@ jobs:
     name: Deployment Notification
     runs-on: ubuntu-latest
     needs: push-to-dockerhub
-    if: always
+    if: always()

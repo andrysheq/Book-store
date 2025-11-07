@@ -24,11 +24,11 @@ jobs:
         working-directory: ./users-service
 
     steps:
-      # Шаг 1: Checkout code
+      # 1) Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Шаг 2: Setup Java
+      # 2) JDK 21
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -36,26 +36,25 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # Шаг 3: Build application
+      # 3) Build
       - name: Build with Maven
-        run: mvn clean package -DskipTests
+        run: mvn -B clean package -DskipTests
 
-      # Шаг 4: Run tests
+      # 4) Tests
       - name: Run tests
-        run: mvn test
+        run: mvn -B test
 
-      # Шаг 5: Build Docker image
-      - name: Build Docker image
+      # 5) Build Docker image (local, для smoke-теста)
+      - name: Build Docker image (test)
         run: |
           docker build -t ${{ env.SERVICE_NAME }}:test .
 
-      # Шаг 6: Test Docker image
+      # 6) Smoke‑test контейнера
       - name: Test Docker image
         run: |
           docker run -d --name test-container -p 8089:8089 ${{ env.SERVICE_NAME }}:test
           sleep 30
           docker ps
-          # Basic health check
           curl -f http://localhost:8089/actuator/health || exit 1
           docker stop test-container
           docker rm test-container
@@ -67,22 +66,22 @@ jobs:
     if: github.ref == 'refs/heads/only-books'
 
     steps:
-      # Шаг 1: Checkout
+      # 1) Checkout (для контекста сборки)
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Шаг 2: Login to Docker Hub
+      # 2) Login в Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Шаг 3: Setup Buildx
+      # 3) Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Шаг 4: Extract metadata
+      # 4) Docker metadata (теги/лейблы)
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -93,7 +92,7 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
 
-      # Шаг 5: Build and push
+      # 5) Build & Push
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -110,3 +109,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: push-to-dockerhub
     if: always()
+    steps:
+      # Минимальный step, чтобы job был валидным, плюс читаемый summary
+      - name: Publish summary
+        run: |
+          echo "### Users Service Deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Ref: ${{ github.ref }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- SHA: ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Result of push-to-dockerhub: ${{ needs.push-to-dockerhub.result }}" >> "$GITHUB_STEP_SUMMARY"

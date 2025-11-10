@@ -3,10 +3,8 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-/monitoring/prometheus/wal/
-/monitoring/prometheus/chunks_head/
-/monitoring/prometheus/lock
-/monitoring/prometheus/queries.active
+monitoring/prometheus/*
+!monitoring/prometheus/prometheus.yml
 /monitoring/grafana/csv/
 /monitoring/grafana/pdf/
 /monitoring/grafana/plugins/

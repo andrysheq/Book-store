@@ -1,0 +1,30 @@
+type Author {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    middleName: String!
+    gender: Gender!
+    birthDate: String!
+}
+
+enum Gender {
+    MALE
+    FEMALE
+}
+
+input AuthorInput {
+    firstName: String!
+    lastName: String!
+    middleName: String!
+    gender: Gender!
+    birthDate: String!
+}
+
+type Query {
+    authors: [Author!]!
+    authorById(id: ID!): Author
+}
+
+type Mutation {
+    addAuthor(input: AuthorInput!): Author!
+}

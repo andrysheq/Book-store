@@ -23,7 +23,6 @@ import java.util.List;
 public class GraphQlAuthorController {
 
     private final AuthorRepoService authorRepoService;
-    private final BaseMapper mapper;
 
     @MutationMapping(name = "addAuthor")
     public AuthorEntity addAuthor(@Argument AuthorInput input) {
@@ -44,18 +43,12 @@ public class GraphQlAuthorController {
     }
 
     @QueryMapping(name = "authors")
-    public List<Author> authors() {
-        List<Author> authors = new ArrayList<>();
-        authorRepoService.findAll()
-                .forEach(author -> {
-                    authors.add(mapper.map(author, Author.class));
-                });
-        return authors;
+    public List<AuthorEntity> authors() {
+        return authorRepoService.findAll();
     }
 
     @QueryMapping(name = "authorById")
-    public Author authorById(@Argument Long id) {
-        AuthorEntity authorEntity = authorRepoService.findById(id);
-        return authorEntity != null ? mapper.map(authorEntity, Author.class) : null;
+    public AuthorEntity authorById(@Argument Long id) {
+        return authorRepoService.findById(id);
     }
 }

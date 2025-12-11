@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8088}
+  port: ${BOOK_SERVER_PORT:8088}
 spring:
   application:
     name: library
@@ -9,7 +9,7 @@ spring:
 
   graphql:
     graphiql:
-      enabled: true
+      enabled: false
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -40,24 +40,6 @@ spring:
   flyway:
     enabled: ${FLYWAY_ENABLED:true}
     clean-disabled: false
-
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
-
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-#    consumer:
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      group-id: object-service-group
-#    topic:
-#      request-topic: object-add-request
-#      response-topic: object-add-response
 
 management:
   endpoints:

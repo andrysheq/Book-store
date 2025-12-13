@@ -1,14 +1,14 @@
-# Масштабирование auth-service
+# Масштабирование book-author-service
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: book-store-service-hpa
+  name: book-author-service-hpa
   namespace: bookstore
 spec:
   scaleTargetRef: # выбор deployment для масштабирования
     apiVersion: apps/v1
     kind: Deployment
-    name: book-store-service
+    name: book-author-service
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -25,7 +25,7 @@ spec:
           type: Utilization
           averageUtilization: 80  # 80% памяти
 ---
-# Масштабирование user-service
+# Масштабирование users-service
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

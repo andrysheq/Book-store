@@ -39,19 +39,48 @@ spec: # спецификация
           ports:
             - containerPort: 8088
               name: http
-          env: # переменные окружения
-            - name: SPRING_DATASOURCE_USERNAME
+          env:
+            # Database connection
+            - name: DB_HOST
+              value: "book-store-database"
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_PORT
+            - name: DB_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DB_DATABASE
+            - name: DB_USERNAME
               valueFrom:
                 configMapKeyRef:
                   name: app-config
                   key: DB_USERNAME
-            - name: SPRING_DATASOURCE_PASSWORD
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: app-secret
                   key: DB_PASSWORD
+
+            # Server & Spring Config
+            - name: BOOK_SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: BOOK_SERVER_PORT
+            - name: SPRING_CACHE_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: SPRING_CACHE_TYPE
             - name: SPRING_PROFILES_ACTIVE
               value: "prod"
+
+            # Flyway & Logging (опционально)
+            - name: FLYWAY_ENABLED
+              value: "true"
 
           resources: # сколько CPU и памяти надо контейнеру
             requests: # столько гарантируем для scheduler
@@ -78,9 +107,9 @@ spec: # спецификация
             periodSeconds: 5
             timeoutSeconds: 3
             failureThreshold: 3
---- # разделитель между объектами в одном файле
+---
 apiVersion: v1
-kind: Service # т.к. deployment создает поды ,которые недоступны снаружи, то Service открывает к ним доступ
+kind: Service
 metadata:
   name: book-author-service
   namespace: bookstore
@@ -92,8 +121,4 @@ spec:
       targetPort: 8088
       protocol: TCP
       name: http
-  type: ClusterIP # виден только внутри кластера
-  # Есть еще:
-  # NodePort = видимый на всех нодах на одном порте (например :30000)
-  # LoadBalancer = видимый внешне через облачный LB (AWS ELB, Azure LB)
-  # ExternalName = алиас на DNS имя снаружи
+  type: ClusterIP

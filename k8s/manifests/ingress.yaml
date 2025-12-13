@@ -1,22 +1,37 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: bookstore-ingress
+  name: bookstore-book-author-ingress
   namespace: bookstore
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
-  rules: # правила маршрутизации
+  rules:
     - http:
         paths:
-          - path: /api/book-store
-            pathType: Prefix # совпадение по префиксу выше
-            backend: # куда отправляется трафик
+          - path: /api/book-store(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
               service:
-                name: book-store-service # ingress отправит сюда трафик
+                name: book-author-service
                 port:
                   number: 8088
-          - path: /api/users
-            pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookstore-users-ingress
+  namespace: bookstore
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /books$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /api/users(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: users-service

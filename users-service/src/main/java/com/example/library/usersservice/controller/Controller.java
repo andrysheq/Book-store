@@ -6,12 +6,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping()
 public class Controller {
 
-    @GetMapping()
+    @GetMapping("/books")
     public String getAllBooks() {
 
         return "!!!!";
+    }
+
+    @GetMapping("/")
+    public String root() {
+        return "users-service";
     }
 }

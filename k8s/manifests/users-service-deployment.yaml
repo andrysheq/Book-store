@@ -82,4 +82,4 @@ spec:
       targetPort: 8089
       protocol: TCP
       name: http
-  type: ClusterIP
+  type: ClusterIP # только внутри кластера

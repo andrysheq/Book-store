@@ -212,7 +212,7 @@ minikube stop
 ```
 ### 2. Поды должны исчезнуть, т.к. они живут только на ноде.
 ```
-kubectl -n ebookstore get pods
+kubectl -n bookstore get pods
 ```
 ### 3. Обратно запустить minikube:
 ```
@@ -224,7 +224,7 @@ kubectl cluster-info
 ```
 ### 5. Проверить запущенные поды:
 ```
-kubectl -n ebookstore get pods
+kubectl -n bookstore get pods
 ```
 
 
@@ -266,13 +266,27 @@ kubectl -n bookstore get pods -w
 # === МАСШТАБИРОВАНИЕ ===
 ### 1. Увеличить число реплик до 5:
 ```
-kubectl -n ebookstore scale deployment auth-service --replicas=5
+kubectl -n bookstore scale deployment users-service --replicas=5
 ```
 ### 2. Проверить:
 ```
-kubectl -n ebookstore get pods
+kubectl -n bookstore get pods
 ```
 ### 3. Вернуть на место:
 ```
-kubectl -n ebookstore scale deployment auth-service --replicas=3
+kubectl -n bookstore scale deployment users-service --replicas=3
+```
+
+### УДАЛЕНИЕ INGRESS
+```
+kubectl -n bookstore delete ingress bookstore-book-author-ingress
+kubectl -n bookstore delete ingress bookstore-book-author-least-conn
+kubectl -n bookstore delete ingress bookstore-book-author-iphash
+```
+
+### ПРИМЕНЕНИЕ INGRESS
+```
+kubectl apply -f bookstore-book-author-least-conn.yaml
+kubectl apply -f bookstore-book-author-iphash.yaml
+kubectl apply -f ingress.yaml
 ```

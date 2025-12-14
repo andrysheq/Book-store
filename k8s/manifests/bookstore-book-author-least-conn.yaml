@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bookstore-book-author-least-conn
+  namespace: bookstore
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # Least Connections - выбирает upstream с минимальным числом активных соединений
+    nginx.ingress.kubernetes.io/upstream-least-conn-balance: "true"
+    nginx.ingress.kubernetes.io/keepalive-connections: "0"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /least-conn/book-store(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: book-author-service
+            port:
+              number: 8088

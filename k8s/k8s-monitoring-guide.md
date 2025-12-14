@@ -50,19 +50,48 @@ Save & test
 1860 - Node Exporter Metrics
 12114 - Kubernetes Deployment Metrics
 ```
-### (опционально) Можно сгенерить нагрузку и посмотреть что будет на графиках (в 3 терминале):
+### Нагрузка Round-robin:
 ```
 while true; do
-  curl -X POST http://localhost:8080/api/auth/register \
+  curl -X GET http://localhost:8080/api/book-store/authors \
     -H "Content-Type: application/json" \
-    -d '{
-      "username": "test'$RANDOM'",
-      "email": "test'$RANDOM'@test.com",
-      "password": "Password123!",
-      "confirmPassword": "Password123!",
-      "firstName": "Test",
-      "lastName": "User"
-    }' > /dev/null 2>&1
-  sleep 1
+    -d '{}' > /dev/null 2>&1
+done
+```
+
+### Нагрузка ip-hash:
+```
+while true; do
+  curl -X GET http://localhost:8080/iphash/book-store/authors \
+    -H "Content-Type: application/json" \
+    -H "X-Forwarded-For: 100.123.4.100" \
+    -d '{}' > /dev/null 2>&1
+done
+```
+
+```
+while true; do
+  curl -X GET http://localhost:8080/iphash/book-store/authors \
+    -H "Content-Type: application/json" \
+    -H "X-Forwarded-For: 999.999.9.999" \
+    -d '{}' > /dev/null 2>&1
+done
+```
+
+```
+while true; do
+curl -X GET http://localhost:8080/iphash/book-store/authors \
+-H "Content-Type: application/json" \
+-H "X-Forwarded-For: 192.168.1.101" \
+-d '{}' > /dev/null 2>&1
+done
+```
+
+### Нагрузка least-conn:
+```
+while true; do
+  curl -X GET http://localhost:8080/least-conn/book-store/authors \
+    -H "Content-Type: application/json" \
+    -d '{}' > /dev/null 2>&1
 done
 ```

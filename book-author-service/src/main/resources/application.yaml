@@ -24,13 +24,11 @@ spring:
   jpa:
     generate-ddl: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        show_sql: ${SHOW_SQL:true}   #  false in prod
-        format_sql: ${FORMAT_SQL:true}
-        generate_statistics: true
+        show_sql: ${SHOW_SQL:false}   #  false in prod
       jakarta:
         persistence:
           sharedCache:
@@ -38,7 +36,7 @@ spring:
     open-in-view: false
 
   flyway:
-    enabled: ${FLYWAY_ENABLED:true}
+    enabled: ${FLYWAY_ENABLED:false}
     clean-disabled: false
 
 management:

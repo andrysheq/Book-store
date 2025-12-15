@@ -16,30 +16,8 @@ services:
       DB_DATABASE: books
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus,metrics
-      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
     networks:
       - monitoring
-
-  users-service:
-    build:
-      context: ./users-service
-      dockerfile: Dockerfile
-    ports:
-      - "8089:8089"
-    environment:
-      SERVER_PORT: 8089
-      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus,metrics
-      MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED: "true"
-      SPRING_PROFILES_ACTIVE: docker
-    networks:
-      - monitoring
-    healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8089/actuator/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   postgres:
     image: postgres:17
@@ -58,37 +36,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-
-  grafana:
-    build: ./monitoring/grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./monitoring/grafana:/var/lib/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    networks:
-      - monitoring
-    depends_on:
-      - prometheus
-
-  prometheus:
-    image: prom/prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./monitoring/prometheus:/prometheus
-    networks:
-      - monitoring
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    restart: unless-stopped
 
 networks:
   monitoring:

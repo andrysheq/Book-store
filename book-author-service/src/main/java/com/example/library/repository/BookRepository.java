@@ -1,49 +1,34 @@
 package com.example.library.repository;
 
-import com.example.library.entity.AuthorEntity;
 import com.example.library.entity.BookEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
-public interface BookRepository extends BaseRepository<BookEntity> {
+public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
-    @Transactional
-    BookEntity saveAndFlush(BookEntity bookEntity);
+    @Query("""
+        SELECT b FROM BookEntity b 
+        LEFT JOIN FETCH b.author 
+        LEFT JOIN FETCH b.genre 
+        WHERE b.id = :id
+    """)
+    BookEntity findByIdWithDetails(@Param("id") Long id);
 
-    @Override
-    @Transactional(readOnly = true)
-    @Query("select b from BookEntity b")
-    List<BookEntity> findAll();
+    @Query("""
+        SELECT b FROM BookEntity b 
+        WHERE b.title ILIKE %:title% 
+        ORDER BY b.title
+    """)
+    Page<BookEntity> findByTitleContaining(@Param("title") String title, Pageable pageable);
 
-    @Override
-    @Transactional(readOnly = true)
-    @Query("select b from BookEntity b")
-    Page<BookEntity> findAll(Pageable pageable);
-
-    @Override
-    @Transactional(readOnly = true)
-    @Query("select b from BookEntity b where b.id = ?1")
-    Optional<BookEntity> findById(Long id);
-
-    @Modifying               // ← обязательно
-    @Transactional           // можно и здесь, но лучше на уровне сервиса
-    @Query(value = "DELETE FROM book_author WHERE book_id = :bookId", nativeQuery = true)
-    void deleteBookAuthorsByBookId(@Param("bookId") Long bookId);
-
-    @Modifying               // для вставки в join-таблицу
-    @Transactional
-    @Query(value = "INSERT INTO book_author (book_id, author_id) VALUES (:bookId, :authorId)", nativeQuery = true)
-    void saveBookAuthor(@Param("bookId") Long bookId, @Param("authorId") Long authorId);
-
-
+    @Query("""
+        SELECT b FROM BookEntity b 
+        WHERE b.author.id = :authorId
+    """)
+    Page<BookEntity> findByAuthorId(@Param("authorId") Long authorId, Pageable pageable);
 }

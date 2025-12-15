@@ -1,27 +1,70 @@
-CREATE TABLE author (
-    id bigserial NOT NULL
-        CONSTRAINT author_pkey
-            PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    middle_name VARCHAR(255),
-    gender VARCHAR(255) NOT NULL,
-    birth_date date NOT NULL
-);
-
-CREATE TABLE book (
-    id bigserial NOT NULL
-        CONSTRAINT book_pkey
-            PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    page_amount bigint NOT NULL
-);
-
-CREATE TABLE book_author (
-      book_id bigint NOT NULL,
-      author_id bigint NOT NULL,
-      CONSTRAINT FK551i3sllw1wj7ex6nir16blsm FOREIGN KEY (author_id) REFERENCES author(id) ON DELETE CASCADE,
-      CONSTRAINT FKs4xm7q8i3uxvaiswj1c35nnxw FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
-);
-
-
+CREATE TABLE user_status (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_user_status PRIMARY KEY (id));
+CREATE TABLE role (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_role PRIMARY KEY (id));
+CREATE TABLE order_status (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_order_status PRIMARY KEY (id));
+CREATE TABLE book_status (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_book_status PRIMARY KEY (id));
+CREATE TABLE review_status (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_review_status PRIMARY KEY (id));
+CREATE TABLE genre (id SERIAL NOT NULL, name varchar(255) NOT NULL UNIQUE, CONSTRAINT pk_genre PRIMARY KEY (id));
+CREATE TABLE author (id SERIAL NOT NULL, last_name varchar(255) NOT NULL, first_name varchar(255) NOT NULL, patronymic varchar(255), birth_date date, CONSTRAINT pk_author PRIMARY KEY (id), CONSTRAINT ck_author_birth_date CHECK (birth_date <= CURRENT_DATE));
+CREATE TABLE "user" (id SERIAL NOT NULL, email varchar(255) NOT NULL UNIQUE, first_name varchar(255) NOT NULL, password varchar(255) NOT NULL, role_id int4 NOT NULL, user_status_id int4 NOT NULL, CONSTRAINT pk_user PRIMARY KEY (id));
+CREATE TABLE book (id SERIAL NOT NULL, title varchar(255) NOT NULL, price numeric(10, 2) NOT NULL, book_status_id int4 NOT NULL, author_id int4 NOT NULL, description varchar(512) NOT NULL, genre_id int4 NOT NULL, CONSTRAINT pk_book PRIMARY KEY (id), CONSTRAINT ck_book_price CHECK (CAST("price" AS DECIMAL) > 0));
+CREATE TABLE electronic_file (id SERIAL NOT NULL, file_name varchar(255) NOT NULL UNIQUE, storage_key varchar(255) NOT NULL, book_id int4 NOT NULL, CONSTRAINT pk_electronic_file PRIMARY KEY (id));
+CREATE TABLE review (id SERIAL NOT NULL, content varchar(255) NOT NULL, rating int2 NOT NULL, "date" date NOT NULL, book_id int4 NOT NULL, user_id int4 NOT NULL, review_status_id int4 NOT NULL, CONSTRAINT pk_review PRIMARY KEY (id), CONSTRAINT ck_review_rating CHECK (CAST("rating" AS DECIMAL) >= 1 AND CAST("rating" AS DECIMAL) <= 5));
+CREATE TABLE "order" (id SERIAL NOT NULL, name varchar(255) NOT NULL, total_amount numeric(10, 2) NOT NULL, user_id int4 NOT NULL, order_status_id int4 NOT NULL, CONSTRAINT pk_order PRIMARY KEY (id), CONSTRAINT ck_order_total_amount CHECK (CAST("total_amount" AS DECIMAL) >= 0));
+CREATE TABLE order_item (id SERIAL NOT NULL, quantity int4 NOT NULL, order_id int4 NOT NULL, book_id int4 NOT NULL, CONSTRAINT pk_order_item PRIMARY KEY (id), CONSTRAINT ck_order_item_quantity CHECK (CAST("quantity" AS DECIMAL) > 0));
+CREATE TABLE cart (id SERIAL NOT NULL, total_amount numeric(10, 2) NOT NULL, user_id int4 NOT NULL, CONSTRAINT pk_cart PRIMARY KEY (id), CONSTRAINT ck_cart_total_amount CHECK (CAST("total_amount" AS DECIMAL) >= 0));
+CREATE TABLE cart_item (id SERIAL NOT NULL, quantity int4 NOT NULL, cart_id int4 NOT NULL, book_id int4 NOT NULL, CONSTRAINT pk_cart_item PRIMARY KEY (id), CONSTRAINT ck_cart_item_quantity CHECK (CAST("quantity" AS DECIMAL) > 0));
+CREATE UNIQUE INDEX uq_user_status_name ON user_status (name);
+CREATE INDEX idx_user_status_name ON user_status (name);
+CREATE UNIQUE INDEX uq_role_name ON role (name);
+CREATE INDEX idx_role_name ON role (name);
+CREATE UNIQUE INDEX uq_order_status_name ON order_status (name);
+CREATE INDEX idx_order_status_name ON order_status (name);
+CREATE UNIQUE INDEX uq_book_status_name ON book_status (name);
+CREATE INDEX idx_book_status_name ON book_status (name);
+CREATE UNIQUE INDEX uq_review_status_name ON review_status (name);
+CREATE INDEX idx_review_status_name ON review_status (name);
+CREATE UNIQUE INDEX uq_genre_name ON genre (name);
+CREATE INDEX idx_genre_name ON genre (name);
+CREATE INDEX idx_author_last_name ON author (last_name);
+CREATE INDEX idx_author_first_name ON author (first_name);
+CREATE UNIQUE INDEX uq_user_email ON "user" (email);
+CREATE INDEX idx_user_email ON "user" (email);
+CREATE INDEX idx_user_role_id ON "user" (role_id);
+CREATE INDEX idx_user_user_status_id ON "user" (user_status_id);
+CREATE INDEX idx_user_first_name ON "user" (first_name);
+CREATE INDEX idx_book_title ON book (title);
+CREATE INDEX idx_book_author_id ON book (author_id);
+CREATE INDEX idx_book_genre_id ON book (genre_id);
+CREATE INDEX idx_book_book_status_id ON book (book_status_id);
+CREATE UNIQUE INDEX uq_electronic_file_storage_key ON electronic_file (storage_key);
+CREATE INDEX idx_electronic_file_book_id ON electronic_file (book_id);
+CREATE UNIQUE INDEX uq_review_user_book ON review (user_id, book_id);
+CREATE INDEX idx_review_book_id ON review (book_id);
+CREATE INDEX idx_review_user_id ON review (user_id);
+CREATE INDEX idx_review_review_status_id ON review (review_status_id);
+CREATE INDEX idx_review_rating ON review (rating);
+CREATE INDEX idx_order_user_id ON "order" (user_id);
+CREATE INDEX idx_order_order_status_id ON "order" (order_status_id);
+CREATE UNIQUE INDEX uq_order_item_order_book on order_item (order_id, book_id);
+CREATE INDEX idx_order_item_order_id ON order_item (order_id);
+CREATE INDEX idx_order_item_book_id ON order_item (book_id);
+CREATE INDEX idx_cart_user_id ON cart (user_id);
+CREATE UNIQUE INDEX uq_cart_item_cart_book ON cart_item (cart_id, book_id);
+CREATE INDEX idx_cart_item_cart_id ON cart_item (cart_id);
+CREATE INDEX idx_cart_item_book_id ON cart_item (book_id);
+ALTER TABLE "user" ADD CONSTRAINT fk_user_role_id FOREIGN KEY (role_id) REFERENCES role (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE "user" ADD CONSTRAINT fk_user_user_status_id FOREIGN KEY (user_status_id) REFERENCES user_status (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE book ADD CONSTRAINT fk_book_book_status_id FOREIGN KEY (book_status_id) REFERENCES book_status (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE electronic_file ADD CONSTRAINT fk_electronic_file_book_id FOREIGN KEY (book_id) REFERENCES book (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE book ADD CONSTRAINT fk_book_genre_id FOREIGN KEY (genre_id) REFERENCES genre (id) ON UPDATE Cascade ON DELETE Set null;
+ALTER TABLE review ADD CONSTRAINT fk_review_book_id FOREIGN KEY (book_id) REFERENCES book (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE review ADD CONSTRAINT fk_review_user_id FOREIGN KEY (user_id) REFERENCES "user" (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE review ADD CONSTRAINT fk_review_review_status_id FOREIGN KEY (review_status_id) REFERENCES review_status (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE "order" ADD CONSTRAINT fk_order_user_id FOREIGN KEY (user_id) REFERENCES "user" (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE "order" ADD CONSTRAINT fk_order_order_status_id FOREIGN KEY (order_status_id) REFERENCES order_status (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE order_item ADD CONSTRAINT fk_order_item_order_id FOREIGN KEY (order_id) REFERENCES "order" (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE order_item ADD CONSTRAINT fk_order_item_book_id FOREIGN KEY (book_id) REFERENCES book (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE cart ADD CONSTRAINT fk_cart_user_id FOREIGN KEY (user_id) REFERENCES "user" (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE cart_item ADD CONSTRAINT fk_cart_item_cart_id FOREIGN KEY (cart_id) REFERENCES cart (id) ON UPDATE Cascade ON DELETE Cascade;
+ALTER TABLE cart_item ADD CONSTRAINT fk_cart_item_book_id FOREIGN KEY (book_id) REFERENCES book (id) ON UPDATE Cascade ON DELETE Restrict;
+ALTER TABLE book ADD CONSTRAINT fk_book_author_id FOREIGN KEY (author_id) REFERENCES author (id) ON UPDATE Cascade ON DELETE Restrict;

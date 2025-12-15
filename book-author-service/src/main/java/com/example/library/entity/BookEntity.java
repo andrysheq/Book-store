@@ -1,24 +1,43 @@
 package com.example.library.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@Schema(name = "Книга")
+import java.math.BigDecimal;
+import java.util.List;
+
 @Entity
 @Table(name = "book")
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class BookEntity extends BaseEntity {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class BookEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Schema(description = "Название книги")
-    @NotNull
+    @Column(nullable = false)
     private String title;
 
-    @Schema(description = "Количество страниц")
-    @NotNull
-    private Integer pageAmount;
+    @Column(nullable = false)
+    private BigDecimal price;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_status_id", nullable = false)
+    private BookStatusEntity bookStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private AuthorEntity author;
+
+    @Column(nullable = false, length = 512)
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genre_id")
+    private GenreEntity genre;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ReviewEntity> reviews;
 }

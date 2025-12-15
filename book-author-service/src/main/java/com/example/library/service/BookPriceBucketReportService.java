@@ -26,7 +26,7 @@ public class BookPriceBucketReportService {
                 .priceRange((String) row[0])
                 .bookCount(((Number) row[1]).longValue())
                 .averageRating(row[2] != null ? new BigDecimal(row[2].toString()) : null)
-                .reviewCount(((Number) row[3]).longValue())
+                .approvedReviewCount(((Number) row[3]).longValue())
                 .build();
     }
 

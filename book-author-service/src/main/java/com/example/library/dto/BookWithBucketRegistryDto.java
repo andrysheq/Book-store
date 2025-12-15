@@ -15,6 +15,6 @@ public class BookWithBucketRegistryDto {
     private String priceRange;
     private Long bookCount;
     private BigDecimal averageRating;
-    private Long reviewCount;
+    private Long approvedReviewCount;
 }
 

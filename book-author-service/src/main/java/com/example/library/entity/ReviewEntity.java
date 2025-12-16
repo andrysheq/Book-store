@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "review", uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "book_id"})})
+@Table(name = "review")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

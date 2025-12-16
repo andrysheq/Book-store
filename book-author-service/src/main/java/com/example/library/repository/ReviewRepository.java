@@ -20,6 +20,12 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
     """)
     Page<ReviewEntity> findByBookId(@Param("bookId") Long bookId, Pageable pageable);
 
+    ReviewEntity findByReviewStatusId(int reviewStatusId);
+
+    ReviewEntity findByUserId(long userId);
+
+    ReviewEntity findByRating(int rating);
+
     /**
      * Получить отчет по ценовым диапазонам книг с рейтингом
      */

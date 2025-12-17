@@ -35,12 +35,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Page<UserEntity> findByCreatedDateRange(@Param("startDate") LocalDateTime startDate,
                                       @Param("endDate") LocalDateTime endDate,
                                       Pageable pageable);
-
-    // Найти активных модераторов
-    @Query("""
-        SELECT u FROM UserEntity u 
-        WHERE u.role.name = 'Moderator' 
-        AND u.userStatus.name = 'Active'
-    """)
-    Page<UserEntity> findActiveModerators(Pageable pageable);
 }

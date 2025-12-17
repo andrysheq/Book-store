@@ -1,4 +1,3 @@
-// ReviewService.java - обновленный сервис
 package com.example.library.service;
 
 import com.example.library.dto.response.ReviewResponse;

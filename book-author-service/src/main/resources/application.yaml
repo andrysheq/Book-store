@@ -12,7 +12,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.example.library.model"
+        spring.json.type.mapping: "userCreatedEvent:com.example.library.model.event.UserCreatedEvent"
+        spring.json.trusted.packages: "*"
 
   cache:
     type: ${SPRING_CACHE_TYPE:none}

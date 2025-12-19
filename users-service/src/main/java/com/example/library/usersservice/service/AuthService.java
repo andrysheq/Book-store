@@ -60,14 +60,14 @@ public class AuthService {
         // Сохранить в БД
         UserEntity savedUser = userRepository.save(user);
 
-        UserCreatedEvent event = UserCreatedEvent.builder()
-                .userId(savedUser.getId())
-                .email(savedUser.getEmail())
-                .firstName(savedUser.getFirstName())
-                .isActive(savedUser.getIsActive())
-                .build();
-
-        kafkaTemplate.send("user.created", user.getEmail(), event);
+//        UserCreatedEvent event = UserCreatedEvent.builder()
+//                .userId(savedUser.getId())
+//                .email(savedUser.getEmail())
+//                .firstName(savedUser.getFirstName())
+//                .isActive(savedUser.getIsActive())
+//                .build();
+//
+//        kafkaTemplate.send("user.created", user.getEmail(), event);
 
         return toUserResponse(savedUser);
     }

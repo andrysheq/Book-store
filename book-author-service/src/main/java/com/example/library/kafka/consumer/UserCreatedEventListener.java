@@ -19,8 +19,7 @@ public class UserCreatedEventListener {
 
     @KafkaListener(
             topics = "user.created",
-            groupId = "book-author-group",
-            containerFactory = "userEventKafkaListenerContainerFactory"
+            groupId = "book-author-group"
     )
     @Transactional
     public void handleUserCreated(UserCreatedEvent event) {

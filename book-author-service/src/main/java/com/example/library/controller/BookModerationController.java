@@ -5,6 +5,7 @@ import com.example.library.model.contract.book.BlockBookRequest;
 import com.example.library.model.contract.book.BookDetailView;
 import com.example.library.model.contract.book.BookModerationRegistryRequest;
 import com.example.library.model.contract.book.BookRegistryView;
+import com.example.library.security.RequireRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,6 +41,7 @@ public class BookModerationController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Получение полной информации о книге с рецензиями")
+    @RequireRole("MODERATOR")
     public BookDetailView getBookDetail(
             @Parameter(description = "Идентификатор книги")
             @NotNull

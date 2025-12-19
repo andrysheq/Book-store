@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +55,7 @@ public class ReviewModerationController {
         return reviewModerationHandler.getReviewDetail(reviewId);
     }
 
-    @PatchMapping("/{id}/approve")
+    @PutMapping("/{id}/approve")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Подтверждение рецензии")
     public void approveReview(
@@ -68,7 +66,7 @@ public class ReviewModerationController {
         reviewModerationHandler.approveReview(reviewId);
     }
 
-    @PatchMapping("/{id}/reject")
+    @PutMapping("/{id}/reject")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Отклонение рецензии с указанием причины")
     public void rejectReview(

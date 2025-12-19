@@ -1,6 +1,6 @@
-package com.example.library.exception;
+package com.example.library.usersservice.exception;
 
-import com.example.library.exception.response.ErrorResponse;
+import com.example.library.usersservice.exception.response.ErrorResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

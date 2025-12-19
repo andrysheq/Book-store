@@ -1,366 +1,72 @@
--- =========================================
--- СКРИПТ ЗАПОЛНЕНИЯ БД ТЕСТОВЫМИ ДАННЫМИ
--- Электронный магазин книг (100K записей)
--- =========================================
-
--- 1. СПРАВОЧНЫЕ ТАБЛИЦЫ (базовые значения)
--- =========================================
-
-INSERT INTO user_status (id, name) VALUES
-                                   (1,'Активен'),
-                                   (2,'Неактивен'),
-                                   (3,'Приостановлен'),
-                                   (4,'Удален');
-
-INSERT INTO role (id, name) VALUES
-                            (1,'Администратор'),
-                            (2,'Пользователь'),
-                            (3,'Модератор');
-
-INSERT INTO order_status (id, name) VALUES
-                                    (1,'В ожидании'),
-                                    (2,'Подтвержден'),
-                                    (3,'Закрыт');
-
-INSERT INTO book_status (id, name) VALUES
-                                   (1,'В наличии'),
-                                   (2,'Распродано'),
-                                   (3,'Предзаказ');
-
--- review_status: остаётся как есть
-INSERT INTO review_status (id, name) VALUES
-                                     (1,'На рассмотрении'),
-                                     (2,'Подтвержден'),
-                                     (3,'Отклонен');
-
--- 2. ЖАНРЫ (15 жанров для разнообразия)
--- =========================================
-
-INSERT INTO genre (name)
-WITH RECURSIVE genre_gen AS (
-    SELECT 1 as id, 'Технологии' as name
-    UNION ALL
-    SELECT 2, 'Научная фантастика'
-    UNION ALL
-    SELECT 3, 'Фантастика'
-    UNION ALL
-    SELECT 4, 'Детектив'
-    UNION ALL
-    SELECT 5, 'Триллер'
-    UNION ALL
-    SELECT 6, 'Роман'
-    UNION ALL
-    SELECT 7, 'Историческая проза'
-    UNION ALL
-    SELECT 8, 'Приключения'
-    UNION ALL
-    SELECT 9, 'Ужасы'
-    UNION ALL
-    SELECT 10, 'Биография'
-    UNION ALL
-    SELECT 11, 'История'
-    UNION ALL
-    SELECT 12, 'Наука'
-    UNION ALL
-    SELECT 13, 'Саморазвитие'
-    UNION ALL
-    SELECT 14, 'Бизнес'
-    UNION ALL
-    SELECT 15, 'Художественная литература'
-)
-SELECT name FROM genre_gen;
-
--- 3. АВТОРЫ (50K авторов)
--- =========================================
-
-INSERT INTO author (last_name, first_name, patronymic, birth_date)
-SELECT
-    'Author_' || LPAD(i::text, 5, '0') as last_name,
-    'Name_' || LPAD((i % 1000)::text, 4, '0') as first_name,
-    'Middle_' || LPAD((i % 500)::text, 4, '0') as patronymic,
-    CURRENT_DATE - (random() * 30000)::integer as birth_date
-FROM generate_series(1, 50000) as i;
-
--- 3.1 ПОЛЬЗОВАТЕЛИ (100K пользователей - стержневая таблица)
--- =========================================
-
-INSERT INTO "user" (email, first_name, password, role_id, user_status_id)
-SELECT
-    'user_' || LPAD(i::text, 6, '0') || '@bookstore.com' as email,
-    'UserName_' || LPAD(i::text, 6, '0') as first_name,
-    'hashed_pwd_' || md5(random()::text) as password,
-    -- role_id: только 1=Admin, 2=User, 3=Moderator
-    (ARRAY[1, 2, 3])[((random() * 2)::integer % 3) + 1] as role_id,
-    -- user_status_id: только 1=Active, 2=Inactive, 3=Suspended, 4=Deleted
-    (ARRAY[1, 2, 3, 4])[((random() * 3)::integer % 4) + 1] as user_status_id
-FROM generate_series(1, 100000) as i;
-
--- 4. КНИГИ (100K книг - стержневая таблица)
--- =========================================
-
-INSERT INTO book (title, price, book_status_id, author_id, description, genre_id)
-SELECT
-    'Book_' || LPAD(i::text, 6, '0') || '_' ||
-    SUBSTRING(MD5(random()::text), 1, 8) as title,
-    (5 + random() * 195)::numeric(10, 2) as price,
-    -- book_status_id: только 1=Available, 2=Pre-order (80% Available, 20% Pre-order)
-    CASE WHEN random() < 0.8 THEN 1 ELSE 2 END as book_status_id,
-    ((i - 1) % 50000) + 1 as author_id,
-    'Description of book number ' || i || ' - ' ||
-    SUBSTRING(MD5(random()::text), 1, 50) as description,
-    ((i - 1) % 15) + 1 as genre_id
-FROM generate_series(1, 100000) as i;
-
--- 5. ЭЛЕКТРОННЫЕ ФАЙЛЫ (для доступных книг)
--- =========================================
-
-INSERT INTO electronic_file (file_name, storage_key, book_id)
-SELECT
-    'ebook_' || LPAD(b.id::text, 6, '0') || '.pdf' as file_name,
-    's3://bookstore/' || MD5(random()::text) || '.pdf' as storage_key,
-    b.id as book_id
-FROM book b
-WHERE (b.id % 3) = 0
-  AND b.book_status_id = 1;  -- только доступные книги (не на предзаказ)
-
--- 6. ОБЗОРЫ/РЕЦЕНЗИИ (300K обзоров - стержневая таблица)
--- =========================================
-
-INSERT INTO review (content, rating, "date", book_id, user_id, review_status_id)
-SELECT
-    'Review text ' || SUBSTRING(MD5(random()::text), 1, 30) || ' ...' as content,
-    ((random() * 4)::integer % 5) + 1 as rating,
-    CURRENT_DATE - (random() * 365)::integer as "date",
-    ((i - 1) % 100000) + 1 as book_id,
-    ((i - 1) % 100000) + 1 as user_id,
-    -- review_status_id: 1=Pending, 2=Approved, 3=Rejected, 4=Hidden
-    (ARRAY[1, 2, 3, 4])[((random() * 3)::integer % 3) + 1] as review_status_id
-FROM generate_series(1, 300000) as i
-ON CONFLICT (user_id, book_id) DO NOTHING;
-
--- 7. КОРЗИНЫ И ТОВАРЫ В КОРЗИНЕ (100K корзин)
--- =========================================
-
-INSERT INTO cart (total_amount, user_id)
-SELECT
-    0::numeric(10, 2) as total_amount,
-    u.id as user_id
-FROM "user" u
-WHERE u.id <= 100000;
-
--- Товары в корзинах (в среднем 3-4 товара в корзине)
-INSERT INTO cart_item (quantity, cart_id, book_id)
-SELECT
-    1          AS quantity,
-    c.id       AS cart_id,
-    b.id       AS book_id
-FROM cart c
-         JOIN book b ON b.id = c.id
-WHERE b.book_status_id = 1;
--- Вторая книга: book_id = cart_id - 1, для чётных корзин
-INSERT INTO cart_item (quantity, cart_id, book_id)
-SELECT
-    1        AS quantity,
-    c.id     AS cart_id,
-    b.id     AS book_id
-FROM cart c
-         JOIN book b
-              ON b.id = c.id - 1
-WHERE c.id > 1
-  AND c.id % 2 = 0           -- "иногда": только чётные корзины
-  AND b.book_status_id = 1;
-
--- Третья книга: book_id = cart_id - 2, для корзин кратных 3
-INSERT INTO cart_item (quantity, cart_id, book_id)
-SELECT
-    1        AS quantity,
-    c.id     AS cart_id,
-    b.id     AS book_id
-FROM cart c
-         JOIN book b
-              ON b.id = c.id - 2
-WHERE c.id > 2
-  AND c.id % 3 = 0           -- "иногда": только корзины кратные 3
-  AND b.book_status_id = 1;
+-- author
+INSERT INTO author (id, last_name, first_name, email, patronymic, birth_date) VALUES
+      (1, 'Толстой', 'Лев', 'tolstoy@library.ru', 'Николаевич', '1828-09-09'),
+      (2, 'Достоевский', 'Федор', 'dostoevsky@library.ru', 'Михайлович', '1821-11-11'),
+      (3, 'Пушкин', 'Александр', 'pushkin@library.ru', 'Сергеевич', '1799-06-06'),
+      (4, 'Булгаков', 'Михаил', 'bulgakov@library.ru', 'Афанасьевич', '1891-05-15'),
+      (5, 'Ахматова', 'Анна', 'akhmatova@library.ru', 'Андреевна', '1889-06-23'),
+      (6, 'Лермонтов', 'Михаил', 'lermontov@library.ru', 'Юрьевич', '1814-10-15'),
+      (7, 'Гоголь', 'Николай', 'gogol@library.ru', 'Васильевич', '1809-03-31'),
+      (8, 'Тургенев', 'Иван', 'turgenev@library.ru', 'Сергеевич', '1818-11-09'),
+      (9, 'Чехов', 'Антон', 'chekhov@library.ru', 'Павлович', '1860-01-29'),
+      (10, 'Салтыков-Щедрин', 'Михаил', 'saltykov@library.ru', 'Евграфович', '1826-01-27');
 
 
+-- admin
+INSERT INTO "user" (id, email, first_name, password, role_id, user_status_id, created_at) VALUES
+      (1, 'admin@bookstore.ru', 'Администратор', '$2a$10$hashedpassword1', 1, 1, '2025-12-10 10:30:00');
 
--- 8. ЗАКАЗЫ И ТОВАРЫ В ЗАКАЗАХ (100K заказов - стержневая таблица)
--- =========================================
+-- moderators
+INSERT INTO "user" (id, email, first_name, password, role_id, user_status_id, created_at) VALUES
+      (2, 'moderator.ivan@bookstore.ru', 'Иван', '$2a$10$hashedpassword2', 3, 1, '2025-12-10 10:30:00'),
+      (3, 'moderator.maria@bookstore.ru', 'Мария', '$2a$10$hashedpassword3', 3, 1, '2025-12-10 10:30:00'),
+      (4, 'moderator.alex@bookstore.ru', 'Александр', '$2a$10$hashedpassword4', 3, 1, '2025-12-10 10:30:00');
 
-INSERT INTO "order" (name, total_amount, user_id, order_status_id)
-SELECT
-    'Order_' || LPAD(i::text, 6, '0') as name,
-    (10 + random() * 5000)::numeric(10, 2) as total_amount,
-    ((i - 1) % 100000) + 1 as user_id,
-    -- order_status_id: только 1=Pending, 2=Confirmed, 3=Cancelled
-    -- Распределение: 40% Pending, 50% Confirmed, 10% Cancelled
-    CASE
-        WHEN random() < 0.4 THEN 1
-        WHEN random() < 0.9 THEN 2
-        ELSE 3
-        END as order_status_id
-FROM generate_series(1, 100000) as i;
+-- users
+INSERT INTO "user" (id, email, first_name, password, role_id, user_status_id, created_at) VALUES
+      (5, 'reader.john@mail.ru', 'Иоанн', '$2a$10$hashedpassword5', 2, 1, '2025-12-10 10:30:00'),
+      (6, 'reader.anna@mail.ru', 'Анна', '$2a$10$hashedpassword6', 2, 1, '2025-12-10 10:30:00'),
+      (7, 'reader.pavel@mail.ru', 'Павел', '$2a$10$hashedpassword7', 2, 1, '2025-12-10 10:30:00'),
+      (8, 'reader.elena@mail.ru', 'Елена', '$2a$10$hashedpassword8', 2, 1, '2025-12-10 10:30:00'),
+      (9, 'reader.dmitry@mail.ru', 'Дмитрий', '$2a$10$hashedpassword9', 2, 1, '2025-12-10 10:30:00'),
+      (10, 'reader.sophia@mail.ru', 'София', '$2a$10$hashedpassword10', 2, 1, '2025-12-10 10:30:00'),
+      (11, 'reader.banned@mail.ru', 'БаннедУзер', '$2a$10$hashedpassword11', 2, 3, '2025-12-10 10:30:00'),
+      (12, 'reader.inactive@mail.ru', 'НеактивныйУзер', '$2a$10$hashedpassword12', 2, 3, '2025-12-10 10:30:00');
 
--- Товары в заказах (только доступные книги)
-INSERT INTO order_item (quantity, order_id, book_id)
-SELECT
-    1        AS quantity,
-    o.id     AS order_id,
-    b.id     AS book_id
-FROM "order" o
-         JOIN book b ON b.id = o.id
-WHERE b.book_status_id = 1
-ON CONFLICT (order_id, book_id) DO NOTHING;
-INSERT INTO order_item (quantity, order_id, book_id)
-SELECT
-    1        AS quantity,
-    o.id     AS order_id,
-    b.id     AS book_id
-FROM "order" o
-         JOIN book b
-              ON b.id = o.id - 1
-WHERE o.id > 1
-  AND o.id % 2 = 0         -- иногда: только чётные
-  AND b.book_status_id = 1
-ON CONFLICT (order_id, book_id) DO NOTHING;
-INSERT INTO order_item (quantity, order_id, book_id)
-SELECT
-    1        AS quantity,
-    o.id     AS order_id,
-    b.id     AS book_id
-FROM "order" o
-         JOIN book b
-              ON b.id = o.id - 2
-WHERE o.id > 2
-  AND o.id % 3 = 0         -- иногда: только кратные 3
-  AND b.book_status_id = 1
-ON CONFLICT (order_id, book_id) DO NOTHING;
+-- book
+INSERT INTO book (id, title, price, book_status_id, author_id, description, genre_id) VALUES
+      (1, 'Война и мир', 2500, 1, 1, 'Эпический роман об эпохе наполеоновских войн и русском дворянстве', 4),
+      (2, 'Преступление и наказание', 1800, 1, 2, 'Психологический роман о преступлении, раскаянии и искуплении', 4),
+      (3, 'Мертвые души', 1200, 1, 7, 'Сатирический роман-поэма о крепостном праве в России', 4),
+      (4, 'Мастер и Маргарита', 1600, 1, 4, 'Фантастический роман о судьбе художника, любви и добра против зла', 1),
+      (5, 'Евгений Онегин', 900, 1, 3, 'Поэма о любви, судьбе и характере русского человека', 4),
+      (6, 'Герой нашего времени', 1100, 1, 6, 'Роман о типичном герое эпохи, его духовном кризисе', 4),
+      (7, 'Отцы и дети', 1300, 1, 8, 'Роман о конфликте поколений, нигилизме и идеалах', 4),
+      (8, 'Вишневый сад', 800, 1, 9, 'Комедия-драма о упадке дворянства и новом времени', 4),
+      (9, 'Станционный смотритель', 700, 1, 3, 'Повесть о трагической судьбе простого человека', 4),
+      (10, 'Демон', 950, 1, 6, 'Поэма-притча о противостоянии добра и зла', 1);
 
--- =========================================
--- ОБНОВЛЕНИЕ СУММ КОРЗИН И ЗАКАЗОВ
--- =========================================
+-- book
+INSERT INTO book (id, title, price, book_status_id, author_id, description, genre_id) VALUES
+      (11, 'Запретная книга', 2000, 2, 5, 'Контент, требующий проверки', 3),
+      (12, 'Спорный роман', 1500, 2, 10, 'Книга, находящаяся на проверке модераторами', 4);
 
-UPDATE cart
-SET total_amount = (
-    SELECT COALESCE(SUM(ci.quantity * b.price), 0)
-    FROM cart_item ci
-             JOIN book b ON ci.book_id = b.id
-    WHERE ci.cart_id = cart.id
-)
-WHERE id IN (SELECT id FROM cart);
+-- review
+INSERT INTO review (id, content, rating, created_at, status_updated_at, book_id, user_id, review_status_id) VALUES
+        (1, 'Отличная книга! Очень понравилась. Рекомендую всем.', 5, '2025-12-10 10:30:00', '2025-12-10 11:00:00', 1, 5, 2),
+        (2, 'Интересный сюжет, хотя местами скучновато.', 4, '2025-12-09 14:20:00', '2025-12-09 15:30:00', 2, 6, 2),
+        (3, 'Классика литературы. Должна быть прочитана каждым.', 5, '2025-12-08 09:15:00', '2025-12-08 10:45:00', 3, 7, 2),
+        (4, 'Хорошо написано, но не совсем мой жанр.', 3, '2025-12-07 16:45:00', '2025-12-07 17:20:00', 4, 8, 2),
+        (5, 'Люблю произведения этого автора.', 5, '2025-12-06 11:00:00', '2025-12-06 12:15:00', 5, 9, 2);
 
-UPDATE "order"
-SET total_amount = (
-    SELECT COALESCE(SUM(oi.quantity * b.price), 0)
-    FROM order_item oi
-             JOIN book b ON oi.book_id = b.id
-    WHERE oi.order_id = "order".id
-)
-WHERE id IN (SELECT id FROM "order");
+-- review
+INSERT INTO review (id, content, rating, created_at, status_updated_at, book_id, user_id, review_status_id) VALUES
+        (6, 'Отличная книга, супер рекомендую!!!', 5, '2025-12-17 08:30:00', NULL, 1, 10, 1),
+        (7, 'Не понравилось совсем, скучная книга', 1, '2025-12-17 12:00:00', NULL, 2, 5, 1),
+        (8, 'Хороший сюжет, хотя конец не совпал с ожиданиями', 4, '2025-12-17 14:30:00', NULL, 6, 6, 1),
+        (9, 'Читал эту книгу в школе, не помню ничего интересного', 2, '2025-12-17 15:45:00', NULL, 3, 7, 1),
+        (10, 'Отличное произведение! Все просто замечательно!', 5, '2025-12-18 09:00:00', NULL, 4, 8, 1);
 
--- =========================================
--- СТАТИСТИКА ЗАГРУЗКИ
--- =========================================
-SELECT 'ПОЛЬЗОВАТЕЛИ' AS section,
-       COUNT(*)       AS total,
-       NULL::bigint   AS sub1,
-       NULL::bigint   AS sub2,
-       NULL::bigint   AS sub3,
-       NULL::numeric  AS avg1,
-       NULL::numeric  AS avg2
-FROM "user"
-
-UNION ALL
-SELECT 'КНИГИ',
-       COUNT(*)                                         AS total,
-       COUNT(*) FILTER (WHERE book_status_id = 1)       AS sub1,  -- available
-       COUNT(*) FILTER (WHERE book_status_id = 2)       AS sub2,  -- preorder
-       NULL::bigint                                     AS sub3,
-       NULL::numeric,
-       NULL::numeric
-FROM book
-
-UNION ALL
-SELECT 'АВТОРЫ',
-       COUNT(*),
-       NULL::bigint,
-       NULL::bigint,
-       NULL::bigint,
-       NULL::numeric,
-       NULL::numeric
-FROM author
-
-UNION ALL
-SELECT 'ЭЛЕКТРОННЫЕ ФАЙЛЫ',
-       COUNT(*),
-       NULL::bigint,
-       NULL::bigint,
-       NULL::bigint,
-       NULL::numeric,
-       NULL::numeric
-FROM electronic_file
-
-UNION ALL
-SELECT 'РЕЦЕНЗИИ',
-       COUNT(*),
-       COUNT(*) FILTER (WHERE review_status_id = 1),    -- pending
-       COUNT(*) FILTER (WHERE review_status_id = 2),    -- approved
-       NULL::bigint,
-       NULL::numeric,
-       NULL::numeric
-FROM review
-
-UNION ALL
-SELECT 'ЗАКАЗЫ',
-       COUNT(*),
-       COUNT(*) FILTER (WHERE order_status_id = 1),     -- pending
-       COUNT(*) FILTER (WHERE order_status_id = 2),     -- confirmed
-       COUNT(*) FILTER (WHERE order_status_id = 3),     -- cancelled
-       NULL::numeric,
-       NULL::numeric
-FROM "order"
-
-UNION ALL
-SELECT 'ТОВАРЫ В ЗАКАЗАХ',
-       COUNT(*),
-       NULL::bigint,
-       NULL::bigint,
-       NULL::bigint,
-       ROUND(AVG(quantity)::numeric, 2),                -- avg_items_per_order
-       NULL::numeric
-FROM order_item
-
-UNION ALL
-SELECT 'КОРЗИНЫ',
-       COUNT(*),
-       COUNT(*) FILTER (WHERE total_amount > 0),        -- non_empty_carts
-       NULL::bigint,
-       NULL::bigint,
-       ROUND(AVG(total_amount)::numeric, 2),            -- avg_cart_total
-       NULL::numeric
-FROM cart
-
-UNION ALL
-SELECT 'ТОВАРЫ В КОРЗИНАХ',
-       COUNT(*),
-       NULL::bigint,
-       NULL::bigint,
-       NULL::bigint,
-       ROUND(AVG(quantity)::numeric, 2),                -- avg_items_per_cart
-       NULL::numeric
-FROM cart_item
-
-UNION ALL
-SELECT 'СПРАВОЧНЫЕ ТАБЛИЦЫ',
-       (SELECT COUNT(*) FROM role)
-           + (SELECT COUNT(*) FROM user_status)
-           + (SELECT COUNT(*) FROM order_status)
-           + (SELECT COUNT(*) FROM book_status)
-           + (SELECT COUNT(*) FROM review_status)
-           + (SELECT COUNT(*) FROM genre)          AS total,
-       (SELECT COUNT(*) FROM role)            AS sub1,  -- можно трактовать как roles
-       (SELECT COUNT(*) FROM user_status)     AS sub2,  -- user_statuses
-       (SELECT COUNT(*) FROM order_status)    AS sub3,  -- order_statuses
-       NULL::numeric,
-       NULL::numeric;
+-- Рецензия от забаненного пользователя (примечание: система должна запретить это на уровне API)
+INSERT INTO review (id, content, rating, created_at, status_updated_at, book_id, user_id, review_status_id) VALUES
+    (14, 'Коротко и ясно - нравится', 4, '2025-12-02 12:00:00', '2025-12-02 12:30:00', 5, 11, 2);

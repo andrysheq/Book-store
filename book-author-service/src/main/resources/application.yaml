@@ -36,7 +36,7 @@ spring:
     open-in-view: false
 
   flyway:
-    enabled: ${FLYWAY_ENABLED:false}
+    enabled: ${FLYWAY_ENABLED:true}
     clean-disabled: false
 
 management:

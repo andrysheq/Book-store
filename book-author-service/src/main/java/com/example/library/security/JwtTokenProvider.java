@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt.secret:your-secret-key-change-this}")
+    @Value("${app.jwt.secret:sjBTLz9GBJbugnMAhVFg5JUOmzNHwYaECfP89ocwX/8=}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:86400000}")
+    @Value("${app.jwt.expiration:315360000000}")
     private long jwtExpirationMs;
 
     /**
@@ -38,8 +38,8 @@ public class JwtTokenProvider {
      */
     public Claims getClaimsFromToken(String token) {
         try {
-            return Jwts.parserBuilder()
-                    .verifyingKey(getSigningKey())
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
@@ -49,6 +49,7 @@ public class JwtTokenProvider {
             throw new IllegalArgumentException("Invalid JWT token", e);
         }
     }
+
 
     /**
      * Получить username из токена
@@ -110,8 +111,8 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .verifyingKey(getSigningKey())
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
                     .parseSignedClaims(token);
             return true;

@@ -1,29 +1,36 @@
 package com.example.library.usersservice.security;
 
 import com.example.library.usersservice.entity.UserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-import io.jsonwebtoken.Claims;
-
 
 /**
  * JWT Token Provider - генерирует и парсит JWT токены
+ * ✅ ОБНОВЛЕНО для JJWT 0.12.3
  */
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt.secret:your-secret-key-change-this}")
+    @Value("${app.jwt.secret:sjBTLz9GBJbugnMAhVFg5JUOmzNHwYaECfP89ocwX/8=}")
     private String jwtSecret;
 
-    @Value("${app.jwt.expiration:86400000}")
+    @Value("${app.jwt.expiration:315360000000}")
     private long jwtExpirationMs;
+
+    /**
+     * Получить SecretKey для подписи
+     */
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
 
     /**
      * Генерировать JWT токен для пользователя
@@ -37,29 +44,25 @@ public class JwtTokenProvider {
         return createToken(claims, user.getEmail());
     }
 
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
-    }
-
     private String createToken(Map<String, Object> claims, String subject) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
-
         return Jwts.builder()
                 .claims(claims)
                 .subject(subject)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(getSigningKey())
                 .compact();
     }
 
+    /**
+     * Получить Claims из токена
+     */
     public Claims getClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     /**
@@ -75,7 +78,6 @@ public class JwtTokenProvider {
     @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
-
         Object rolesObj = claims.get("roles");
 
         if (rolesObj instanceof Collection<?>) {
@@ -92,28 +94,20 @@ public class JwtTokenProvider {
     }
 
     /**
-     * Проверить, что токен содержит конкретную роль
+     * Проверить роль
      */
     public boolean hasRole(String token, String requiredRole) {
-        List<String> roles = getRolesFromToken(token);
-        return roles.stream()
+        return getRolesFromToken(token).stream()
                 .anyMatch(role -> role.equalsIgnoreCase(requiredRole));
     }
 
     /**
-     * Проверить, что токен содержит одну из указанных ролей
+     * Проверить любую из ролей
      */
     public boolean hasAnyRole(String token, String... requiredRoles) {
-        List<String> roles = getRolesFromToken(token);
-        return roles.stream()
-                .anyMatch(role -> {
-                    for (String requiredRole : requiredRoles) {
-                        if (role.equalsIgnoreCase(requiredRole)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
+        return getRolesFromToken(token).stream()
+                .anyMatch(role -> Arrays.stream(requiredRoles)
+                        .anyMatch(requiredRole -> role.equalsIgnoreCase(requiredRole)));
     }
 
     /**
@@ -121,10 +115,10 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -142,7 +136,6 @@ public class JwtTokenProvider {
      * Проверить, истёк ли токен
      */
     public boolean isTokenExpired(String token) {
-        Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        return getExpirationDateFromToken(token).before(new Date());
     }
 }

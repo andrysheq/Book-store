@@ -7,9 +7,11 @@ import com.example.library.usersservice.model.AuthRequest;
 import com.example.library.usersservice.model.AuthResponse;
 import com.example.library.usersservice.model.RegisterRequest;
 import com.example.library.usersservice.model.UserResponse;
+import com.example.library.usersservice.model.event.UserCreatedEvent;
 import com.example.library.usersservice.repository.UserRepository;
 import com.example.library.usersservice.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaTemplate<String, UserCreatedEvent> kafkaTemplate;
 
     /**
      * Регистрация нового пользователя
@@ -56,6 +59,15 @@ public class AuthService {
 
         // Сохранить в БД
         UserEntity savedUser = userRepository.save(user);
+
+        UserCreatedEvent event = UserCreatedEvent.builder()
+                .userId(savedUser.getId())
+                .email(savedUser.getEmail())
+                .firstName(savedUser.getFirstName())
+                .isActive(savedUser.getIsActive())
+                .build();
+
+        kafkaTemplate.send("user.created", user.getEmail(), event);
 
         return toUserResponse(savedUser);
     }

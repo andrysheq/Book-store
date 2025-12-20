@@ -15,6 +15,9 @@ public record BookRegistryView(
         @Schema(description = "Название книги", requiredMode = Schema.RequiredMode.REQUIRED)
         String title,
 
+        @Schema(description = "Описание", requiredMode = Schema.RequiredMode.REQUIRED)
+        String description,
+
         @Schema(description = "Цена в копейках", requiredMode = Schema.RequiredMode.REQUIRED)
         Integer price,
 

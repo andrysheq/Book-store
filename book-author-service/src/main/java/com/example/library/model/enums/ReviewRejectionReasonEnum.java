@@ -15,9 +15,8 @@ public enum ReviewRejectionReasonEnum {
     SPAM(1, "Спам"),
     OFFENSIVE_CONTENT(2, "Оскорбительный контент"),
     IRRELEVANT_CONTENT(3, "Содержание не относится к книге"),
-    PROMOTIONAL_CONTENT(4, "Рекламный контент"),
-    INAPPROPRIATE_LANGUAGE(5, "Ненормативная лексика"),
-    OTHER(6, "Другое");
+    INAPPROPRIATE_LANGUAGE(4, "Ненормативная лексика"),
+    OTHER(5, "Другое");
 
     private final Integer id;
     private final String title;

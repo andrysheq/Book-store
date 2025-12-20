@@ -18,6 +18,7 @@ public class BookModerationConverter {
         return new BookRegistryView(
                 entity.getId(),
                 entity.getTitle(),
+                entity.getDescription(),
                 entity.getPrice(),
                 entity.getBookStatus().getTitle(),
                 entity.getAuthor().getFirstName() + " " + entity.getAuthor().getLastName(),

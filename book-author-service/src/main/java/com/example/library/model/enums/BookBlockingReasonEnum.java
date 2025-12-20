@@ -12,14 +12,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Getter
 public enum BookBlockingReasonEnum {
-    INAPPROPRIATE_CONTENT(1, "Неприемлемое содержание"),
+    INAPPROPRIATE_CONTENT(1, "Книга запрещена на территории РФ"),
     COPYRIGHT_VIOLATION(2, "Нарушение авторских прав"),
-    SPAM(3, "Спам"),
-    DUPLICATED_ENTRY(4, "Дублирующаяся запись"),
-    TECHNICAL_ISSUES(5, "Технические проблемы"),
-    POLICY_VIOLATION(6, "Нарушение политики платформы"),
-    AUTHOR_REQUEST(7, "По запросу автора"),
-    OTHER(8, "Другое");
+    TECHNICAL_ISSUES(3, "Технические проблемы"),
+    POLICY_VIOLATION(4, "Нарушение политики платформы"),
+    AUTHOR_REQUEST(5, "По запросу автора"),
+    OTHER(6, "Другое");
 
     private final Integer id;
     private final String title;

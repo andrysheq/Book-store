@@ -16,7 +16,7 @@ public record BookDetailView(
         @Schema(description = "Название книги", requiredMode = Schema.RequiredMode.REQUIRED)
         String title,
 
-        @Schema(description = "Цена в копейках", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "Цена", requiredMode = Schema.RequiredMode.REQUIRED)
         Integer price,
 
         @Schema(description = "Статус книги", requiredMode = Schema.RequiredMode.REQUIRED)

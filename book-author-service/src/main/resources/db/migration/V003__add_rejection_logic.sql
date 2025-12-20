@@ -20,12 +20,10 @@ CREATE TABLE IF NOT EXISTS book_blocking_reason (
 INSERT INTO book_blocking_reason (id, name) VALUES
     (1, 'Книга запрещена на территории РФ'),
     (2, 'Нарушение авторских прав'),
-    (3, 'Спам'),
-    (4, 'Дублирующаяся запись'),
-    (5, 'Технические проблемы'),
-    (6, 'Нарушение политики платформы'),
-    (7, 'По запросу автора'),
-    (8, 'Другое');
+    (3, 'Технические проблемы'),
+    (4, 'Нарушение политики платформы'),
+    (5, 'По запросу автора'),
+    (6, 'Другое');
 
 ALTER TABLE review
     ADD COLUMN IF NOT EXISTS rejection_reason_id INTEGER null,

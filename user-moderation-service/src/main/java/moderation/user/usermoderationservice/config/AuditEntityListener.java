@@ -1,8 +1,7 @@
 package moderation.user.usermoderationservice.config;
 
-import com.example.library.config.Auditable;
-import com.example.library.model.dao.AuditEntity;
 import jakarta.persistence.PrePersist;
+import moderation.user.usermoderationservice.model.dao.AuditEntity;
 
 import java.time.LocalDateTime;
 

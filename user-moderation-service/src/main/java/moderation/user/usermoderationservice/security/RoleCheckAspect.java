@@ -1,8 +1,8 @@
 package moderation.user.usermoderationservice.security;
 
-import com.example.library.exception.ForbiddenException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import moderation.user.usermoderationservice.exception.ForbiddenException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;

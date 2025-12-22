@@ -1,6 +1,5 @@
 package moderation.user.usermoderationservice.config.jpa;
 
-import com.example.library.config.jpa.JpaSearchRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.data.domain.Sort;

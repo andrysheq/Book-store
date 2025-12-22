@@ -1,7 +1,5 @@
 package moderation.user.usermoderationservice.config.jpa;
 
-import com.example.library.config.jpa.SearchJPASpecificationsBuilder;
-import com.example.library.config.jpa.SpecificationBuildException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;

@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 import moderation.user.usermoderationservice.config.AuditEntityListener;
 import moderation.user.usermoderationservice.config.Auditable;
+import moderation.user.usermoderationservice.model.enums.UserStatusEnum;
 import org.hibernate.annotations.Comment;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Сущность пользователя (читателя/модератора/администратора)
@@ -35,8 +37,12 @@ public class UserEntity implements Auditable, Serializable {
 
     @Column(name = "user_status_id", nullable = false)
     @Comment("Статус пользователя (1=Активен, 3=Заблокирован)")
-    private UserStatusEnum userStatus;
+    private UserStatusEnum status;
 
     @Embedded
     private AuditEntity audit;
+
+    @Column(name = "status_updated_at")
+    @Comment("Время последнего обновления статуса")
+    private LocalDateTime statusUpdatedAt;
 }

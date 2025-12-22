@@ -1,6 +1,5 @@
 package moderation.user.usermoderationservice.config.jpa;
 
-import com.example.library.config.jpa.JpaSearchSpecificationExecutor;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Optional;

@@ -1,7 +1,5 @@
 package moderation.user.usermoderationservice.config.jpa;
 
-import com.example.library.config.jpa.SearchCriteria;
-import com.example.library.config.jpa.SpecificationBuildException;
 import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;

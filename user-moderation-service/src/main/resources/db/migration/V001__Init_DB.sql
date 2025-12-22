@@ -7,7 +7,7 @@ create table if not exists user_status
 
 insert into user_status (id, name) VALUES
                                        (1,'Активен'),
-                                       (3,'Заблокирован');
+                                       (2,'Заблокирован');
 
 create sequence if not exists user_seq increment 1 minvalue 1 maxvalue 9223372036854775807 start 1 cache 1;
 create table "user" 

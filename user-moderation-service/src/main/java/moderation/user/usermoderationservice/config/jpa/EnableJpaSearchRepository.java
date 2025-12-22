@@ -1,6 +1,5 @@
 package moderation.user.usermoderationservice.config.jpa;
 
-import com.example.library.config.jpa.JpaSearchRepositoryImpl;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.lang.annotation.*;

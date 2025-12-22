@@ -24,6 +24,7 @@
 	<modules>
 		<module>book-author-service</module>
 		<module>users-service</module>
+		<module>user-moderation-service</module>
 	</modules>
 	<scm>
 		<connection/>

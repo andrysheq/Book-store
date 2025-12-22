@@ -1,8 +1,8 @@
 package moderation.user.usermoderationservice.exception;
 
-import com.example.library.exception.response.ErrorResponse;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.extern.slf4j.Slf4j;
+import moderation.user.usermoderationservice.exception.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

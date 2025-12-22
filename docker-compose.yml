@@ -116,6 +116,43 @@ services:
       retries: 5
       start_period: 30s
 
+  user-moderation-service:
+    build:
+      context: ./user-moderation-service
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    depends_on:
+      - postgres-user-moderation
+    environment:
+      SERVER_PORT: 8087
+      DB_HOST: postgres-user-moderation
+      DB_PORT: 5434
+      DB_DATABASE: users
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - monitoring
+
+  postgres-user-moderation:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: users
+    ports:
+      - "5434:5434"
+    networks:
+      - monitoring
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d users" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 networks:
   monitoring:
     driver: bridge

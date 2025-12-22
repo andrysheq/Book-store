@@ -1,0 +1,85 @@
+server:
+  port: ${BOOK_SERVER_PORT:8087}
+spring:
+  application:
+    name: user-moderation
+
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    consumer:
+#      group-id: user-group
+#      auto-offset-reset: earliest
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring.json.type.mapping: "userCreatedEvent:com.example.library.model.event.UserCreatedEvent"
+#        spring.json.trusted.packages: "*"
+
+  cache:
+    type: ${SPRING_CACHE_TYPE:none}
+
+  graphql:
+    graphiql:
+      enabled: false
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/${DB_DATABASE:users}"
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: ${SHOW_SQL:false}   #  false in prod
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: UNSPECIFIED
+    open-in-view: false
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    clean-disabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics,info
+
+  health:
+    redis:
+      enabled: ${MANAGEMENT_HEALTH_REDIS_ENABLED:false}
+
+  metrics:
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.cache: TRACE
+    org.springframework.web: INFO
+    ROOT: INFO
+    org.zalando.logbook: TRACE
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}
+    path: ${SWAGGER_PATH:/swagger-ui.html}
+

@@ -39,7 +39,7 @@ public class BookModerationConverter {
                                 r.getContent(),
                                 r.getRating(),
                                 r.getReviewStatus().getTitle(),
-                                r.getUser().getFirstName(),
+                                r.getUserNickname(),
                                 r.getAudit().getCreatedAt()
                         ))
                         .collect(Collectors.toList())

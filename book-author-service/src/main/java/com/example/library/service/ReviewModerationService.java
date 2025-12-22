@@ -1,14 +1,22 @@
 package com.example.library.service;
 
 import com.example.library.exception.BadRequestException;
+import com.example.library.model.contract.book.BookModerationRegistryRequest;
 import com.example.library.model.contract.review.RejectReviewRequest;
+import com.example.library.model.contract.review.ReviewRegistryRequest;
+import com.example.library.model.contract.review.ReviewRegistryView;
+import com.example.library.model.dao.BookEntity;
 import com.example.library.model.dao.ReviewEntity;
+import com.example.library.model.enums.BookStatusEnum;
 import com.example.library.model.enums.ReviewRejectionReasonEnum;
 import com.example.library.model.enums.ReviewStatusEnum;
 import com.example.library.repository.ReviewRepository;
+import com.example.library.service.spec.BookSpecificationBuilder;
+import com.example.library.service.spec.ReviewSpecificationBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +50,7 @@ public class ReviewModerationService {
 
     @Transactional
     public void approveReview(ReviewEntity review) {
-        if (review.getReviewStatus() != ReviewStatusEnum.ON_REVIEW) {
+        if (review.getReviewStatus() == ReviewStatusEnum.APPROVED) {
             throw new BadRequestException("Некорректный статус отзыва");
         }
 
@@ -56,7 +64,7 @@ public class ReviewModerationService {
 
     @Transactional
     public void rejectReview(ReviewEntity review, RejectReviewRequest request) {
-        if (review.getReviewStatus() != ReviewStatusEnum.ON_REVIEW) {
+        if (review.getReviewStatus() == ReviewStatusEnum.REJECTED) {
             throw new BadRequestException("Некорректный статус отзыва");
         }
 
@@ -79,5 +87,18 @@ public class ReviewModerationService {
         if (ReviewRejectionReasonEnum.of(reasonId) == null) {
             throw new BadRequestException("Некорректный id причины отклонения");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ReviewEntity> getReviewRegistry(ReviewRegistryRequest request, Pageable pageable) {
+        Specification<ReviewEntity> spec = buildSpecification(request);
+        return reviewRepository.findAll(spec, pageable);
+    }
+
+    private Specification<ReviewEntity> buildSpecification(ReviewRegistryRequest request) {
+        return new ReviewSpecificationBuilder()
+                .withStatus(ReviewStatusEnum.of(request.statusId()))
+                .withSearchLike(request.searchLike())
+                .build();
     }
 }

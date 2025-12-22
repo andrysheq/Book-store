@@ -3,7 +3,9 @@ package com.example.library.controller;
 import com.example.library.handler.ReviewModerationHandler;
 import com.example.library.model.contract.review.RejectReviewRequest;
 import com.example.library.model.contract.review.ReviewDetailView;
+import com.example.library.model.contract.review.ReviewRegistryRequest;
 import com.example.library.model.contract.review.ReviewRegistryView;
+import com.example.library.security.RequireRole;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,27 +28,21 @@ public class ReviewModerationController {
 
     private final ReviewModerationHandler reviewModerationHandler;
 
-    @GetMapping("/pending")
+    @PostMapping("/filter")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Получение списка рецензий на рассмотрении")
-    public Page<ReviewRegistryView> getPendingReviews(
+    @Operation(summary = "Получение реестра отзывов для модератора")
+    @RequireRole("MODERATOR")
+    public Page<ReviewRegistryView> getFilteredReviews(
+            @Valid @RequestBody ReviewRegistryRequest request,
             @ParameterObject
             Pageable pageable) {
-        return reviewModerationHandler.getPendingReviews(pageable);
-    }
-
-    @GetMapping("/rejected")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Получение списка отклоненных рецензий")
-    public Page<ReviewRegistryView> getRejectedReviews(
-            @ParameterObject
-            Pageable pageable) {
-        return reviewModerationHandler.getRejectedReviews(pageable);
+        return reviewModerationHandler.filterReviews(request, pageable);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Получение полной информации о рецензии")
+    @RequireRole("MODERATOR")
     public ReviewDetailView getReviewDetail(
             @Parameter(description = "Идентификатор рецензии")
             @NotNull
@@ -58,6 +54,7 @@ public class ReviewModerationController {
     @PutMapping("/{id}/approve")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Подтверждение рецензии")
+    @RequireRole("MODERATOR")
     public void approveReview(
             @Parameter(description = "Идентификатор рецензии")
             @NotNull
@@ -69,6 +66,7 @@ public class ReviewModerationController {
     @PutMapping("/{id}/reject")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Отклонение рецензии с указанием причины")
+    @RequireRole("MODERATOR")
     public void rejectReview(
             @Parameter(description = "Идентификатор рецензии")
             @NotNull
@@ -83,6 +81,7 @@ public class ReviewModerationController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Удаление рецензии")
+    @RequireRole("MODERATOR")
     public void deleteReview(
             @Parameter(description = "Идентификатор рецензии")
             @NotNull

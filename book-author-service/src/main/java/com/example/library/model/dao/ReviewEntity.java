@@ -47,10 +47,13 @@ public class ReviewEntity implements Auditable, Serializable {
     @Comment("Ссылка на книгу")
     private BookEntity book;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
-    @Comment("Ссылка на пользователя-автора рецензии")
-    private UserEntity user;
+    @Column(name = "user_nickname")
+    @Comment("Имя пользователя-автора рецензии")
+    private String userNickname;
+
+    @Column(name = "user_email")
+    @Comment("Email пользователя-автора рецензии")
+    private String userEmail;
 
     @Column(name = "review_status_id", nullable = false)
     @Comment("Статус рецензии (1=На рассмотрении, 2=Подтвержден, 3=Отклонен)")

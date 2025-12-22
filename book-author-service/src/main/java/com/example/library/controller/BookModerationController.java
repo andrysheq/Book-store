@@ -31,6 +31,7 @@ public class BookModerationController {
     @PostMapping("/catalog")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Получение каталога книг для модератора")
+    @RequireRole("MODERATOR")
     public Page<BookRegistryView> getBookCatalog(
             @Valid @RequestBody BookModerationRegistryRequest request,
             @ParameterObject
@@ -50,18 +51,10 @@ public class BookModerationController {
         return bookModerationHandler.getBookDetail(bookId);
     }
 
-    @GetMapping("/blocked")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Получение списка заблокированных книг")
-    public Page<BookRegistryView> getBlockedBooks(
-            @ParameterObject
-            Pageable pageable) {
-        return bookModerationHandler.getBlockedBooks(pageable);
-    }
-
     @PutMapping("/{id}/block")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Блокировка книги с указанием причины")
+    @RequireRole("MODERATOR")
     public void blockBook(
             @Parameter(description = "Идентификатор книги")
             @NotNull
@@ -76,6 +69,7 @@ public class BookModerationController {
     @PutMapping("/{id}/unblock")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Разблокировка книги")
+    @RequireRole("MODERATOR")
     public void unblockBook(
             @Parameter(description = "Идентификатор книги")
             @NotNull

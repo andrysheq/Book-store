@@ -4,7 +4,7 @@ import com.example.library.exception.BadRequestException;
 import com.example.library.model.contract.book.BlockBookRequest;
 import com.example.library.model.contract.book.BookModerationRegistryRequest;
 import com.example.library.repository.BookRepository;
-import com.example.library.service.spec.BookModerationSpecificationBuilder;
+import com.example.library.service.spec.BookSpecificationBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import com.example.library.model.dao.*;
@@ -32,7 +32,7 @@ public class BookModerationService {
 
     @Transactional(readOnly = true)
     public Page<BookEntity> getBookCatalog(BookModerationRegistryRequest request, Pageable pageable) {
-        Specification<BookEntity> spec = buildSpecification(request, false);
+        Specification<BookEntity> spec = buildSpecification(request);
         return bookRepository.findAll(spec, pageable);
     }
 
@@ -73,12 +73,11 @@ public class BookModerationService {
         }
     }
 
-    private Specification<BookEntity> buildSpecification(BookModerationRegistryRequest request, boolean blocked) {
-        return new BookModerationSpecificationBuilder()
-                .withStatus(blocked ? BookStatusEnum.BLOCKED : null)
-                .withAuthorId(request.authorId())
+    private Specification<BookEntity> buildSpecification(BookModerationRegistryRequest request) {
+        return new BookSpecificationBuilder()
+                .withStatus(BookStatusEnum.of(request.statusId()))
                 .withGenreId(request.genreId())
-                .withTitleLike(request.title())
+                .withSearchLike(request.searchLike())
                 .build();
     }
 }

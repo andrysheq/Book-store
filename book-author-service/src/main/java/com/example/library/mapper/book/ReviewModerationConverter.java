@@ -22,8 +22,9 @@ public class ReviewModerationConverter {
                 entity.getRating(),
                 entity.getReviewStatus().getTitle(),
                 entity.getBook().getTitle(),
-                entity.getUser().getEmail(),
+                entity.getUserEmail(),
                 entity.getRejectionReason() != null ? entity.getRejectionReason().getTitle() : null,
+                entity.getRejectionComment(),
                 entity.getAudit().getCreatedAt(),
                 entity.getStatusUpdatedAt()
         );
@@ -44,9 +45,8 @@ public class ReviewModerationConverter {
                         entity.getBook().getTitle()
                 ),
                 new ReviewDetailView.AuthorInfo(
-                        entity.getUser().getId(),
-                        entity.getUser().getEmail(),
-                        entity.getUser().getFirstName()
+                        entity.getUserEmail(),
+                        entity.getUserNickname()
                 ),
                 entity.getRejectionReason() != null ? entity.getRejectionReason().getTitle() : null,
                 entity.getRejectionComment(),

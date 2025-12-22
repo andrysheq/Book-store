@@ -48,8 +48,6 @@ public record ReviewDetailView(
 
     @Schema(description = "Информация об авторе рецензии")
     public record AuthorInfo(
-            @Schema(description = "Идентификатор пользователя", requiredMode = Schema.RequiredMode.REQUIRED)
-            Long id,
 
             @Schema(description = "Email пользователя", requiredMode = Schema.RequiredMode.REQUIRED)
             String email,

@@ -5,18 +5,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Фильтры для поиска книг в каталоге модератора")
 public record BookModerationRegistryRequest(
         @Schema(
-                description = "ID статуса (1=В наличии, 3=Заблокирована)",
+                description = "ID статуса (1=В наличии, 2=Заблокирована)",
                 example = "1",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
         Integer statusId,
-
-        @Schema(
-                description = "ID автора для фильтрации",
-                example = "1",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
-        )
-        Integer authorId,
 
         @Schema(
                 description = "ID жанра для фильтрации",
@@ -26,17 +19,10 @@ public record BookModerationRegistryRequest(
         Integer genreId,
 
         @Schema(
-                description = "Название или часть названия книги для поиска",
+                description = "Часть названия или автора для поиска книги",
                 example = "Война",
                 requiredMode = Schema.RequiredMode.NOT_REQUIRED
         )
-        String title,
-
-        @Schema(
-                description = "Искать только заблокированные книги с указанной причиной",
-                example = "true",
-                requiredMode = Schema.RequiredMode.NOT_REQUIRED
-        )
-        Boolean hasBlockingReason
+        String searchLike
 ) {
 }

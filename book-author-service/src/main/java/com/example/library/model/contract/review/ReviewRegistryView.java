@@ -30,6 +30,9 @@ public record ReviewRegistryView(
         @Schema(description = "Причина отклонения рецензии (если отклонена)")
         String rejectionReason,
 
+        @Schema(description = "Заметка модератора")
+        String rejectionNote,
+
         @Schema(description = "Дата и время создания рецензии", requiredMode = Schema.RequiredMode.REQUIRED)
         LocalDateTime createdAt,
 

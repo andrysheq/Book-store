@@ -1,0 +1,14 @@
+package moderation.user.usermoderationservice.security;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface RequireRole {
+
+    /**
+     * Требуемая роль (например: "MODERATOR", "ADMIN")
+     */
+    String value();
+}

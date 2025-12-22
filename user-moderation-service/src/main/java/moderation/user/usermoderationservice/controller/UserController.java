@@ -28,7 +28,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Получение всех жанров")
+    @Operation(summary = "Получение пользователя по id")
     @RequireRole("MODERATOR")
     public UserView getUser(
             @Parameter(description = "Идентификатор пользователя")
@@ -55,7 +55,7 @@ public class UserController {
 
     @PostMapping("/catalog")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Получение каталога книг для модератора")
+    @Operation(summary = "Получение каталога книг для модератора с фильтрацией")
     @RequireRole("MODERATOR")
     public Page<UserView> getUsers(
             @Valid @RequestBody UserRegistryRequest request,

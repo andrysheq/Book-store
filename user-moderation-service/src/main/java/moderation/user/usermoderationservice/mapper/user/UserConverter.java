@@ -18,7 +18,7 @@ public class UserConverter {
                 entity.getId(),
                 entity.getEmail(),
                 entity.getFirstName(),
-                entity.getStatus().name(),
+                entity.getStatus().getTitle(),
                 entity.getAudit().getCreatedAt(),
                 entity.getStatusUpdatedAt()
         );

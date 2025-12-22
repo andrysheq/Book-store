@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -22,6 +24,7 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id = " + userId + " не найден"));
         userEntity.setStatus(UserStatusEnum.of(statusId));
+        userEntity.setStatusUpdatedAt(LocalDateTime.now());
 
         return userRepository.save(userEntity);
     }

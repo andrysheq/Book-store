@@ -127,7 +127,7 @@ services:
     environment:
       SERVER_PORT: 8087
       DB_HOST: postgres-user-moderation
-      DB_PORT: 5434
+      DB_PORT: 5432
       DB_DATABASE: users
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
@@ -143,7 +143,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: users
     ports:
-      - "5434:5434"
+      - "5434:5432"
     networks:
       - monitoring
     healthcheck:

@@ -13,18 +13,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>book-store</name>
-	<description>Book store app.</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
 	<modules>
 		<module>book-author-service</module>
 		<module>users-service</module>
 		<module>user-moderation-service</module>
+		<module>email-notification-service</module>
 	</modules>
 	<scm>
 		<connection/>

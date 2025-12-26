@@ -1,0 +1,41 @@
+server:
+  port: ${NOTIFICATION_SERVER_PORT:8085}
+spring:
+  application:
+    name: email-notification
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    consumer:
+      group-id: notification-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.add.type.headers: "false"
+        auto.create.topics.enable: true
+    listener:
+      ack-mode: RECORD
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: kareev17i@gmail.com
+    password: Dfg1!sdf_Djv2
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+app:
+  kafka:
+    topics:
+      user-status-changed: user-status-changed-topic
+
+logging:
+  level:
+    org.springframework: INFO
+    org.springframework.cache: INFO
+    org.springframework.web: INFO
+    ROOT: INFO
+    org.zalando.logbook: INFO
+

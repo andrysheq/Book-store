@@ -2,7 +2,10 @@ package moderation.user.usermoderationservice.service;
 
 import lombok.RequiredArgsConstructor;
 import moderation.user.usermoderationservice.exception.NotFoundException;
+import moderation.user.usermoderationservice.kafka.UserEventProducer;
+import moderation.user.usermoderationservice.mapper.user.UserStatusChangedEventConverter;
 import moderation.user.usermoderationservice.model.contract.UserRegistryRequest;
+import moderation.user.usermoderationservice.model.contract.UserStatusChangedEvent;
 import moderation.user.usermoderationservice.model.dao.UserEntity;
 import moderation.user.usermoderationservice.model.enums.UserStatusEnum;
 import moderation.user.usermoderationservice.repository.UserRepository;
@@ -19,14 +22,22 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserEventProducer userEventProducer;
+    private final UserStatusChangedEventConverter userStatusChangedEventConverter;
 
     public UserEntity setUserStatus(Long userId, Integer statusId) {
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        if(userEntity.getStatus().getId().equals(statusId)){
+            return userEntity;
+        }
         userEntity.setStatus(UserStatusEnum.of(statusId));
         userEntity.setStatusUpdatedAt(LocalDateTime.now());
 
-        return userRepository.save(userEntity);
+        UserEntity savedEntity = userRepository.save(userEntity);
+        UserStatusChangedEvent event = userStatusChangedEventConverter.toUserStatusChangedEvent(savedEntity);
+        userEventProducer.sendUserStatusChanged(event);
+        return savedEntity;
     }
 
     public UserEntity getUserById(Long id) {

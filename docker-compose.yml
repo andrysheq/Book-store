@@ -135,6 +135,29 @@ services:
     networks:
       - monitoring
 
+  email-notification-service:
+    build:
+      context: ./email-notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "8085:8085"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8085
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_CONSUMER_GROUP_ID: email-notification-service
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: kareev17i@gmail.com
+      SPRING_MAIL_PASSWORD: Dfg1!sdf_Djv2
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: 'true'
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: 'true'
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED: 'true'
+    networks:
+      - monitoring
+
   postgres-user-moderation:
     image: postgres:17
     restart: always
@@ -152,6 +175,20 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+
+  nginx:
+    image: nginx:latest
+    container_name: gateway
+    ports:
+      - "8080:80"          # Один внешний порт для всех API
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - book-author-service
+      - users-service
+      - user-moderation-service
+    networks:
+      - monitoring
 
 networks:
   monitoring:

@@ -4,16 +4,15 @@ spring:
   application:
     name: user-moderation
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    consumer:
-#      group-id: user-group
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.type.mapping: "userCreatedEvent:com.example.library.model.event.UserCreatedEvent"
-#        spring.json.trusted.packages: "*"
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.add.type.headers: "false"
+        auto.create.topics.enable: true
 
   cache:
     type: ${SPRING_CACHE_TYPE:none}
@@ -72,8 +71,8 @@ management:
 
 logging:
   level:
-    org.springframework: INFO
-    org.springframework.cache: TRACE
+    org.springframework: DEBUG
+    org.springframework.cache: INFO
     org.springframework.web: INFO
     ROOT: INFO
     org.zalando.logbook: TRACE
@@ -82,4 +81,9 @@ springdoc:
   swagger-ui:
     enabled: ${SWAGGER_ENABLED:true}
     path: ${SWAGGER_PATH:/swagger-ui.html}
+
+app:
+  kafka:
+    topics:
+      user-status-changed: user-status-changed-topic
 

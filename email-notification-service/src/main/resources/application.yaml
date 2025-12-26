@@ -14,14 +14,15 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.add.type.headers: "false"
         auto.create.topics.enable: true
+        spring.json.value.default.type: "moderation.notification.emailnotificationservice.model.contract.UserStatusChangedEvent"
     listener:
       ack-mode: RECORD
 
   mail:
-    host: smtp.gmail.com
+    host: smtp.mail.ru
     port: 587
-    username: kareev17i@gmail.com
-    password: Dfg1!sdf_Djv2
+    username: andrey_kareev@inbox.ru
+    password:  anJ3RLZ0HBnlaZhnwa40
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
